@@ -1,0 +1,25 @@
+{
+  "id": "pomodoro",
+  "name": "番茄钟",
+  "version": "1.0.0",
+  "description": "番茄钟专注计时 + 专注统计",
+  "tools": [
+    {
+      "name": "pomodoro_start",
+      "description": "开始一个番茄钟专注时段",
+      "parameters": { "task": "string", "minutes": "number?" }
+    },
+    {
+      "name": "pomodoro_stats",
+      "description": "查看专注统计数据",
+      "parameters": { "period": "string?" }
+    }
+  ],
+  "triggers": [],
+  "permissions": ["storage"],
+  "entry": "index.js",
+  "configSchema": {
+    "workMinutes": { "type": "number", "label": "专注时长(分钟)", "default": 25 },
+    "breakMinutes": { "type": "number", "label": "休息时长(分钟)", "default": 5 }
+  }
+}

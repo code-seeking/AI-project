@@ -1,0 +1,58 @@
+[
+  {
+    "id": "coder",
+    "name": "🖥️ 代码助手",
+    "description": "擅长代码编写、调试、代码审查",
+    "icon": "💻",
+    "expertise": [
+      "JavaScript",
+      "Java",
+      "Python",
+      "SQL"
+    ]
+  },
+  {
+    "id": "search",
+    "name": "🔍 搜索助手",
+    "description": "擅长搜索信息、查找资料",
+    "icon": "🔎",
+    "expertise": [
+      "互联网搜索",
+      "文档检索",
+      "知识库查询"
+    ]
+  },
+  {
+    "id": "analysis",
+    "name": "📊 分析助手",
+    "description": "擅长数据分析、趋势分析、报告生成",
+    "icon": "📈",
+    "expertise": [
+      "数据分析",
+      "统计",
+      "可视化"
+    ]
+  },
+  {
+    "id": "plan",
+    "name": "📋 规划助手",
+    "description": "擅长任务分解、方案设计、项目管理",
+    "icon": "📝",
+    "expertise": [
+      "项目管理",
+      "架构设计",
+      "流程规划"
+    ]
+  },
+  {
+    "id": "memory",
+    "name": "🧠 记忆助手",
+    "description": "记录和检索你的偏好、习惯、历史行为",
+    "icon": "🧠",
+    "expertise": [
+      "记忆管理",
+      "偏好分析",
+      "行为模式"
+    ]
+  }
+]

@@ -1,0 +1,51 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /api
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.model.ollama.autoconfigure.OllamaChatAutoConfiguration
+      - org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+  ai:
+    openai:
+      api-key: ${DASHSCOPE_API_KEY:your-key}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      connect-timeout: 5s
+      read-timeout: 10s
+      chat:
+        model: qwen-max
+        temperature: 0.3
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: qwen2.5-coder:7b
+      embedding:
+        model: nomic-embed-text
+
+app:
+  ai-gateway:
+    cache:
+      max-size: 500
+      ttl-minutes: 30
+    db:
+      url: ${AI_GATEWAY_DB_URL:}
+      username: ${AI_GATEWAY_DB_USER:}
+      password: ${AI_GATEWAY_DB_PASS:}
+  vector:
+    enabled: true
+    dimensions: 768
+    datasource:
+      url: jdbc:postgresql://localhost:5432/chat_portal
+      username: postgres
+      password: ${PG_PASSWORD:5WYUo0OFBVmgQN8R}
+
+logging:
+  level:
+    com.chatportal.ai: DEBUG
+    org.springframework.ai: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/ai-service.log

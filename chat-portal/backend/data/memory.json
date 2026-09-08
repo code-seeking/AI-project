@@ -1,0 +1,23 @@
+[
+  {
+    "id": "mrt4ido7fcrb",
+    "content": "用户使用 Java 编程语言",
+    "category": "tech_preference",
+    "source": "auto",
+    "tags": [
+      "java",
+      "programming_language"
+    ],
+    "createdAt": "2026-07-20T11:10:28.279Z",
+    "updatedAt": "2026-07-20T11:10:28.279Z"
+  },
+  {
+    "id": "mrj2y10au6nu",
+    "content": "我常用的语言是java",
+    "category": "general",
+    "source": "manual",
+    "tags": [],
+    "createdAt": "2026-07-13T10:28:57.370Z",
+    "updatedAt": "2026-07-13T10:28:57.370Z"
+  }
+]

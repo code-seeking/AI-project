@@ -1,0 +1,27 @@
+{
+  "id": "code-snippet",
+  "name": "代码片段",
+  "version": "1.0.0",
+  "description": "代码片段管理 + 搜索",
+  "tools": [
+    {
+      "name": "snippet_add",
+      "description": "保存一个代码片段",
+      "parameters": { "title": "string", "code": "string", "language": "string?", "tags": "string?" }
+    },
+    {
+      "name": "snippet_search",
+      "description": "搜索代码片段",
+      "parameters": { "keyword": "string", "language": "string?" }
+    },
+    {
+      "name": "snippet_list",
+      "description": "列出所有代码片段",
+      "parameters": { "language": "string?", "limit": "number?" }
+    }
+  ],
+  "triggers": [],
+  "permissions": ["storage"],
+  "entry": "index.js",
+  "configSchema": {}
+}

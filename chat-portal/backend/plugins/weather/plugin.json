@@ -1,0 +1,22 @@
+{
+  "id": "weather",
+  "name": "天气查询",
+  "version": "1.0.0",
+  "description": "查询城市天气 + 穿衣建议",
+  "tools": [
+    {
+      "name": "weather_query",
+      "description": "查询指定城市的天气信息和穿衣建议",
+      "parameters": { "city": "string", "days": "number?" }
+    }
+  ],
+  "triggers": [
+    { "type": "schedule", "cron": "0 8 * * *", "action": "weather_query" }
+  ],
+  "permissions": ["network", "storage"],
+  "entry": "index.js",
+  "configSchema": {
+    "defaultCity": { "type": "string", "label": "默认城市", "default": "北京" },
+    "apiKey": { "type": "string", "label": "天气API Key", "required": false }
+  }
+}
