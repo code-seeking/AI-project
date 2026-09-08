@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Portal 助手</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      padding: 12px 16px;
+      background: #252526;
+      border-bottom: 1px solid #3c3c3c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-weight: 600; font-size: 15px; }
+    .status { font-size: 12px; color: #858585; }
+    .status.online { color: #67c23a; }
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .message {
+      padding: 10px 14px;
+      border-radius: 8px;
+      max-width: 90%;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    .message.user {
+      background: #0d7377;
+      align-self: flex-end;
+      color: #fff;
+    }
+    .message.assistant {
+      background: #2d2d2d;
+      align-self: flex-start;
+    }
+    .message.system {
+      background: #1e3a2f;
+      align-self: center;
+      font-size: 12px;
+      color: #7fdb9a;
+      text-align: center;
+    }
+    .message .type-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: #3c3c3c;
+      margin-bottom: 4px;
+    }
+    .input-area {
+      padding: 12px 16px;
+      background: #252526;
+      border-top: 1px solid #3c3c3c;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .input-area textarea {
+      flex: 1;
+      background: #3c3c3c;
+      border: 1px solid #4a4a4a;
+      border-radius: 6px;
+      color: #d4d4d4;
+      padding: 8px 12px;
+      font-size: 13px;
+      resize: none;
+      height: 40px;
+      font-family: inherit;
+    }
+    .input-area textarea:focus { outline: none; border-color: #0d7377; }
+    .input-area button {
+      background: #0d7377;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .input-area button:hover { background: #0a5c5f; }
+    .input-area button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .quick-actions {
+      display: flex;
+      gap: 4px;
+      padding: 8px 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    .quick-action {
+      font-size: 12px;
+      padding: 4px 10px;
+      background: #3c3c3c;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #a0a0a0;
+      border: none;
+    }
+    .quick-action:hover { background: #4a4a4a; color: #d4d4d4; }
+    .loading-dots { display: inline-flex; gap: 3px; }
+    .loading-dots span {
+      width: 6px; height: 6px;
+      background: #858585;
+      border-radius: 50%;
+      animation: dot 1.4s infinite ease-in-out both;
+    }
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes dot {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">AI Portal</span>
+    <span class="status" id="status">检查连接...</span>
+  </div>
+
+  <div class="quick-actions">
+    <button class="quick-action" data-action="explain">解释</button>
+    <button class="quick-action" data-action="translate">翻译</button>
+    <button class="quick-action" data-action="summarize">总结</button>
+    <button class="quick-action" data-action="improve">改进写作</button>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="message system">欢迎使用 AI Portal 助手！选中文本后右键使用 AI 功能，或直接在下方输入。</div>
+  </div>
+
+  <div class="input-area">
+    <textarea id="input" placeholder="输入消息..." rows="1"></textarea>
+    <button id="sendBtn">发送</button>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

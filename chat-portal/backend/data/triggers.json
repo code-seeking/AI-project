@@ -1,0 +1,13 @@
+[
+  {
+    "id": "mrj2yw60eq13",
+    "type": "scheduled",
+    "name": "提醒我写日志",
+    "condition": "",
+    "action": "提醒查看工作日志",
+    "schedule": null,
+    "enabled": true,
+    "lastTriggered": null,
+    "createdAt": "2026-07-13T10:29:37.752Z"
+  }
+]

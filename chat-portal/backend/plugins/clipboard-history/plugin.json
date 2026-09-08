@@ -1,0 +1,29 @@
+{
+  "id": "clipboard-history",
+  "name": "剪贴板历史",
+  "version": "1.0.0",
+  "description": "剪贴板历史管理，记录复制内容",
+  "tools": [
+    {
+      "name": "clipboard_add",
+      "description": "添加一条剪贴板记录",
+      "parameters": { "content": "string", "type": "string?" }
+    },
+    {
+      "name": "clipboard_search",
+      "description": "搜索剪贴板历史",
+      "parameters": { "keyword": "string", "limit": "number?" }
+    },
+    {
+      "name": "clipboard_list",
+      "description": "列出最近的剪贴板记录",
+      "parameters": { "limit": "number?" }
+    }
+  ],
+  "triggers": [],
+  "permissions": ["storage"],
+  "entry": "index.js",
+  "configSchema": {
+    "maxItems": { "type": "number", "label": "最大记录数", "default": 100 }
+  }
+}

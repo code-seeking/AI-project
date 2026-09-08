@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "AI Portal 助手",
+  "version": "1.0.0",
+  "description": "AI Portal 浏览器扩展 - 页面内容提取、AI 分析、侧栏快速访问",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "sidePanel",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:3001/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "AI Portal",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "打开 AI Portal 侧栏"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

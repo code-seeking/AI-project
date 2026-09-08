@@ -1,0 +1,31 @@
+{
+  "name": "hr-candidate-e2e-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HR候选人管理系统 E2E API 自动化测试",
+  "scripts": {
+    "test:local": "cross-env ENV=local npx playwright test",
+    "test:test": "cross-env ENV=test npx playwright test",
+    "test:staging": "cross-env ENV=staging npx playwright test",
+    "test:candidate": "npx playwright test candidate.spec.ts",
+    "test:position": "npx playwright test position.spec.ts",
+    "test:matching": "npx playwright test matching.spec.ts",
+    "test:interview": "npx playwright test interview.spec.ts",
+    "test:report": "npx playwright test report.spec.ts",
+    "test:chat": "npx playwright test chat.spec.ts",
+    "test:workflow": "npx playwright test workflow.spec.ts",
+    "test:all": "npx playwright test",
+    "report:html": "npx playwright show-report test-results/html-report",
+    "agent:diagnose": "node scripts/test-diagnosis-agent.cjs",
+    "test:ui:diagnose": "npx playwright test --config=playwright.ui.config.ts && node scripts/test-diagnosis-agent.cjs test-results/ui-results.json",
+    "test:api:diagnose": "npx playwright test && node scripts/test-diagnosis-agent.cjs test-results/results.json"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "@types/node": "^25.9.3",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.0",
+    "mysql2": "^3.22.5",
+    "typescript": "^5.6.0"
+  }
+}

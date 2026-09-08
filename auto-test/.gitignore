@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-results/
+agent-data/
+playwright-report/
+.env.local
+.env.test
+.env.staging
+*.log

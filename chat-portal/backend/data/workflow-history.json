@@ -1,0 +1,33 @@
+[
+  {
+    "id": "mrt4w6o2px6l",
+    "workflowId": "wf-daily-summary",
+    "workflowName": "📊 日志总结",
+    "success": true,
+    "steps": [
+      {
+        "step": 1,
+        "label": "汇总今日工作日志",
+        "status": "success",
+        "output": "今天还没有工作记录。",
+        "duration": 2
+      },
+      {
+        "step": 2,
+        "label": "llm",
+        "status": "success",
+        "output": "# 工作日报\n\n**日期：** [今天日期]\n\n**今日工作内容：**\n- 暂无工作记录\n\n**备注：** 今日尚未开始工作或记录工作内容\n\n---\n\n如果你有具体的工作内容需要整理，可以直接提供给我，我会帮你整理成规范的日报格式。",
+        "duration": 4650
+      },
+      {
+        "step": 3,
+        "label": "推送日报",
+        "status": "success",
+        "output": "已发送通知 [dingtalk]: # 工作日报\n\n**日期：** [今天日期]\n\n**今日工作内容：**\n- 暂无工作记录\n\n**备注",
+        "duration": 5
+      }
+    ],
+    "totalDuration": 4657,
+    "executedAt": "2026-07-20T11:21:12.386Z"
+  }
+]

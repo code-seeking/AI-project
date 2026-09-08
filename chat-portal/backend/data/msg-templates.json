@@ -1,0 +1,26 @@
+[
+  {
+    "id": "tpl-alert",
+    "name": "⚠️ 告警通知",
+    "type": "alert",
+    "content": "【告警】{{title}}\n时间: {{time}}\n详情: {{detail}}"
+  },
+  {
+    "id": "tpl-daily",
+    "name": "📊 日报模板",
+    "type": "daily",
+    "content": "【日报】{{date}}\n\n今日完成:\n{{items}}\n\n明日计划:\n{{plan}}"
+  },
+  {
+    "id": "tpl-weekly",
+    "name": "📅 周报模板",
+    "type": "weekly",
+    "content": "【周报】{{week}}\n\n本周总结:\n{{summary}}\n\n下周计划:\n{{plan}}"
+  },
+  {
+    "id": "tpl-morning",
+    "name": "☀️ 晨间提醒",
+    "type": "morning",
+    "content": "☀️ 早上好！今日待办:\n{{todos}}\n\n加油！"
+  }
+]

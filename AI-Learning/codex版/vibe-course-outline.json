@@ -1,0 +1,374 @@
+[
+  {
+    "title": "封面 - Java AI 应用开发课程 Vibe 讲义版",
+    "page": 1
+  },
+  {
+    "title": "写在前面：这不是另一份名词表",
+    "page": 2
+  },
+  {
+    "title": "第 1 章 AI 应用开发认知",
+    "page": 3,
+    "children": [
+      {
+        "title": "AI 应用开发认知 - 一张图先建立直觉",
+        "page": 3
+      },
+      {
+        "title": "AI 应用开发认知 - 真实卡点",
+        "page": 4
+      },
+      {
+        "title": "AI 应用开发认知 - 知识点地图",
+        "page": 5
+      },
+      {
+        "title": "AI 应用开发认知 - 流程拆解图",
+        "page": 6
+      },
+      {
+        "title": "AI 应用开发认知 - Java 落地骨架",
+        "page": 7
+      },
+      {
+        "title": "AI 应用开发认知 - 学完自查",
+        "page": 8
+      }
+    ]
+  },
+  {
+    "title": "第 2 章 模型 API 与流式聊天",
+    "page": 9,
+    "children": [
+      {
+        "title": "模型 API 与流式聊天 - 一张图先建立直觉",
+        "page": 9
+      },
+      {
+        "title": "模型 API 与流式聊天 - 真实卡点",
+        "page": 10
+      },
+      {
+        "title": "模型 API 与流式聊天 - 知识点地图",
+        "page": 11
+      },
+      {
+        "title": "模型 API 与流式聊天 - 流程拆解图",
+        "page": 12
+      },
+      {
+        "title": "模型 API 与流式聊天 - Java 落地骨架",
+        "page": 13
+      },
+      {
+        "title": "模型 API 与流式聊天 - 学完自查",
+        "page": 14
+      }
+    ]
+  },
+  {
+    "title": "第 3 章 Prompt 与结构化输出",
+    "page": 15,
+    "children": [
+      {
+        "title": "Prompt 与结构化输出 - 一张图先建立直觉",
+        "page": 15
+      },
+      {
+        "title": "Prompt 与结构化输出 - 真实卡点",
+        "page": 16
+      },
+      {
+        "title": "Prompt 与结构化输出 - 知识点地图",
+        "page": 17
+      },
+      {
+        "title": "Prompt 与结构化输出 - 流程拆解图",
+        "page": 18
+      },
+      {
+        "title": "Prompt 与结构化输出 - Java 落地骨架",
+        "page": 19
+      },
+      {
+        "title": "Prompt 与结构化输出 - 学完自查",
+        "page": 20
+      }
+    ]
+  },
+  {
+    "title": "第 4 章 Spring AI 入门",
+    "page": 21,
+    "children": [
+      {
+        "title": "Spring AI 入门 - 一张图先建立直觉",
+        "page": 21
+      },
+      {
+        "title": "Spring AI 入门 - 真实卡点",
+        "page": 22
+      },
+      {
+        "title": "Spring AI 入门 - 知识点地图",
+        "page": 23
+      },
+      {
+        "title": "Spring AI 入门 - 流程拆解图",
+        "page": 24
+      },
+      {
+        "title": "Spring AI 入门 - Java 落地骨架",
+        "page": 25
+      },
+      {
+        "title": "Spring AI 入门 - 学完自查",
+        "page": 26
+      }
+    ]
+  },
+  {
+    "title": "第 5 章 Embedding 与向量库",
+    "page": 27,
+    "children": [
+      {
+        "title": "Embedding 与向量库 - 一张图先建立直觉",
+        "page": 27
+      },
+      {
+        "title": "Embedding 与向量库 - 真实卡点",
+        "page": 28
+      },
+      {
+        "title": "Embedding 与向量库 - 知识点地图",
+        "page": 29
+      },
+      {
+        "title": "Embedding 与向量库 - 流程拆解图",
+        "page": 30
+      },
+      {
+        "title": "Embedding 与向量库 - Java 落地骨架",
+        "page": 31
+      },
+      {
+        "title": "Embedding 与向量库 - 学完自查",
+        "page": 32
+      }
+    ]
+  },
+  {
+    "title": "第 6 章 RAG 知识库 v1",
+    "page": 33,
+    "children": [
+      {
+        "title": "RAG 知识库 v1 - 一张图先建立直觉",
+        "page": 33
+      },
+      {
+        "title": "RAG 知识库 v1 - 真实卡点",
+        "page": 34
+      },
+      {
+        "title": "RAG 知识库 v1 - 知识点地图",
+        "page": 35
+      },
+      {
+        "title": "RAG 知识库 v1 - 流程拆解图",
+        "page": 36
+      },
+      {
+        "title": "RAG 知识库 v1 - Java 落地骨架",
+        "page": 37
+      },
+      {
+        "title": "RAG 知识库 v1 - 学完自查",
+        "page": 38
+      }
+    ]
+  },
+  {
+    "title": "第 7 章 RAG 工程优化",
+    "page": 39,
+    "children": [
+      {
+        "title": "RAG 工程优化 - 一张图先建立直觉",
+        "page": 39
+      },
+      {
+        "title": "RAG 工程优化 - 真实卡点",
+        "page": 40
+      },
+      {
+        "title": "RAG 工程优化 - 知识点地图",
+        "page": 41
+      },
+      {
+        "title": "RAG 工程优化 - 流程拆解图",
+        "page": 42
+      },
+      {
+        "title": "RAG 工程优化 - Java 落地骨架",
+        "page": 43
+      },
+      {
+        "title": "RAG 工程优化 - 学完自查",
+        "page": 44
+      }
+    ]
+  },
+  {
+    "title": "第 8 章 Tool Calling",
+    "page": 45,
+    "children": [
+      {
+        "title": "Tool Calling - 一张图先建立直觉",
+        "page": 45
+      },
+      {
+        "title": "Tool Calling - 真实卡点",
+        "page": 46
+      },
+      {
+        "title": "Tool Calling - 知识点地图",
+        "page": 47
+      },
+      {
+        "title": "Tool Calling - 流程拆解图",
+        "page": 48
+      },
+      {
+        "title": "Tool Calling - Java 落地骨架",
+        "page": 49
+      },
+      {
+        "title": "Tool Calling - 学完自查",
+        "page": 50
+      }
+    ]
+  },
+  {
+    "title": "第 9 章 数据库问答助手",
+    "page": 51,
+    "children": [
+      {
+        "title": "数据库问答助手 - 一张图先建立直觉",
+        "page": 51
+      },
+      {
+        "title": "数据库问答助手 - 真实卡点",
+        "page": 52
+      },
+      {
+        "title": "数据库问答助手 - 知识点地图",
+        "page": 53
+      },
+      {
+        "title": "数据库问答助手 - 流程拆解图",
+        "page": 54
+      },
+      {
+        "title": "数据库问答助手 - Java 落地骨架",
+        "page": 55
+      },
+      {
+        "title": "数据库问答助手 - 学完自查",
+        "page": 56
+      }
+    ]
+  },
+  {
+    "title": "第 10 章 Agent 工作流",
+    "page": 57,
+    "children": [
+      {
+        "title": "Agent 工作流 - 一张图先建立直觉",
+        "page": 57
+      },
+      {
+        "title": "Agent 工作流 - 真实卡点",
+        "page": 58
+      },
+      {
+        "title": "Agent 工作流 - 知识点地图",
+        "page": 59
+      },
+      {
+        "title": "Agent 工作流 - 流程拆解图",
+        "page": 60
+      },
+      {
+        "title": "Agent 工作流 - Java 落地骨架",
+        "page": 61
+      },
+      {
+        "title": "Agent 工作流 - 学完自查",
+        "page": 62
+      }
+    ]
+  },
+  {
+    "title": "第 11 章 工程化与安全治理",
+    "page": 63,
+    "children": [
+      {
+        "title": "工程化与安全治理 - 一张图先建立直觉",
+        "page": 63
+      },
+      {
+        "title": "工程化与安全治理 - 真实卡点",
+        "page": 64
+      },
+      {
+        "title": "工程化与安全治理 - 知识点地图",
+        "page": 65
+      },
+      {
+        "title": "工程化与安全治理 - 流程拆解图",
+        "page": 66
+      },
+      {
+        "title": "工程化与安全治理 - Java 落地骨架",
+        "page": 67
+      },
+      {
+        "title": "工程化与安全治理 - 学完自查",
+        "page": 68
+      }
+    ]
+  },
+  {
+    "title": "第 12 章 综合设计与架构表达",
+    "page": 69,
+    "children": [
+      {
+        "title": "综合设计与架构表达 - 一张图先建立直觉",
+        "page": 69
+      },
+      {
+        "title": "综合设计与架构表达 - 真实卡点",
+        "page": 70
+      },
+      {
+        "title": "综合设计与架构表达 - 知识点地图",
+        "page": 71
+      },
+      {
+        "title": "综合设计与架构表达 - 流程拆解图",
+        "page": 72
+      },
+      {
+        "title": "综合设计与架构表达 - Java 落地骨架",
+        "page": 73
+      },
+      {
+        "title": "综合设计与架构表达 - 学完自查",
+        "page": 74
+      }
+    ]
+  },
+  {
+    "title": "参考资料与继续深挖",
+    "page": 75
+  }
+]

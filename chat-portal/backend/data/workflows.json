@@ -1,0 +1,125 @@
+[
+  {
+    "id": "wf-morning",
+    "name": "☀️ 晨间例程",
+    "description": "每天早上生成今日待办并发送提醒",
+    "enabled": false,
+    "trigger": {
+      "type": "schedule",
+      "cron": "0 9 * * *"
+    },
+    "steps": [
+      {
+        "type": "llm",
+        "config": {
+          "prompt": "根据用户最近的工作日志，生成今日待办事项建议（3-5条）",
+          "label": "AI 生成待办"
+        }
+      },
+      {
+        "type": "notify",
+        "config": {
+          "channel": "dingtalk",
+          "template": "morning"
+        },
+        "label": "发送钉钉提醒"
+      }
+    ],
+    "createdAt": "2026-07-20T11:20:18.078Z"
+  },
+  {
+    "id": "wf-code-review",
+    "name": "🔍 代码审查",
+    "description": "接收代码 → LLM分析 → 生成报告",
+    "enabled": false,
+    "trigger": {
+      "type": "manual"
+    },
+    "steps": [
+      {
+        "type": "input",
+        "config": {
+          "prompt": "请粘贴要审查的代码",
+          "label": "输入代码"
+        }
+      },
+      {
+        "type": "llm",
+        "config": {
+          "prompt": "请审查以下代码，指出问题并给出改进建议：\n{{input}}",
+          "label": "AI 审查代码"
+        }
+      },
+      {
+        "type": "save_knowledge",
+        "config": {
+          "category": "代码审查"
+        },
+        "label": "保存到知识库"
+      }
+    ],
+    "createdAt": "2026-07-20T11:20:18.083Z"
+  },
+  {
+    "id": "wf-daily-summary",
+    "name": "📊 日志总结",
+    "description": "每晚 18:00 汇总工作日志生成小结",
+    "enabled": false,
+    "trigger": {
+      "type": "schedule",
+      "cron": "0 18 * * *"
+    },
+    "steps": [
+      {
+        "type": "worklog_summary",
+        "config": {},
+        "label": "汇总今日工作日志"
+      },
+      {
+        "type": "llm",
+        "config": {
+          "prompt": "请将以下工作记录整理成简洁的日报格式：\n{{input}}",
+          "label": "AI 生成日报"
+        }
+      },
+      {
+        "type": "notify",
+        "config": {
+          "channel": "dingtalk",
+          "template": "daily"
+        },
+        "label": "推送日报"
+      }
+    ],
+    "createdAt": "2026-07-20T11:20:18.083Z"
+  },
+  {
+    "id": "wf-bookmark-organize",
+    "name": "📚 书签整理",
+    "description": "新书签 → AI分类 → 打标签 → 归入分组",
+    "enabled": false,
+    "trigger": {
+      "type": "condition",
+      "condition": "bookmarks_unclassified > 10"
+    },
+    "steps": [
+      {
+        "type": "api",
+        "config": {
+          "method": "POST",
+          "url": "/api/classify/bookmarks"
+        },
+        "label": "AI 智能分类"
+      },
+      {
+        "type": "notify",
+        "config": {
+          "channel": "internal",
+          "message": "书签整理完成"
+        },
+        "label": "通知完成"
+      }
+    ],
+    "createdAt": "2026-07-20T11:20:18.083Z"
+  }
+]
