@@ -1,6 +1,6 @@
 # AI-Learning — Java 开发者 AI 应用开发学习路线
 
-> 从 Transformer 原理到企业级 LLM 落地，25 课系统化笔记，专为有 Java 经验的开发者打造。
+> 从 Transformer 原理到企业级 LLM 落地，32 课系统化笔记，专为有 Java 经验的开发者打造。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -48,6 +48,21 @@
 | 23 | MCP 与 AI 工具生态 | Model Context Protocol、标准化连接企业系统 |
 | 24 | 端到端企业案例 | AI 招聘系统完整架构，串联全部 23 课知识 |
 
+### Agent 专题篇（25-32）
+
+参考 [Datawhale Hello-Agents](https://hello-agents.datawhale.cc) 课程体系，深入 Agent 理论与实践。
+
+| 课号 | 主题 | 你将学到 |
+|------|------|--------|
+| 25 | 智能体发展史 | 从符号主义到 LLM 驱动的 70 年演进脉络 |
+| 26 | Agent 经典范式构建 | ReAct / Plan-and-Solve / Reflection 三种思维范式 |
+| 27 | 低代码平台 Agent 搭建 | Coze / Dify / FastGPT / n8n 快速搭建 Agent |
+| 28 | 主流 Agent 框架实践 | AutoGen / AgentScope / CAMEL / LangGraph 对比 |
+| 29 | 从 0 构建 Agent 框架 | 手把手构建 HelloAgents 智能体框架 |
+| 30 | 上下文工程 | ContextBuilder / NoteTool / GSSC 流水线 |
+| 31 | Agent 通信协议 | MCP / A2A / ANP 三大协议深度解析 |
+| 32 | Agentic-RL 训练实战 | 从 SFT 到 GRPO 的 LLM Agent 训练路径 |
+
 ### 附：Codex 版课程
 
 还包含一份 **Java AI 应用开发课程**（Codex 版），按知识点复杂度自适应展开，覆盖：
@@ -88,7 +103,7 @@ Transformer → Tokenization → Prompt Engineering
 
 ## 技术栈关键词
 
-`LLM` `Transformer` `RAG` `Embedding` `Vector Database` `pgvector` `Prompt Engineering` `Function Calling` `AI Agent` `Multi-Agent` `MCP` `Spring Boot` `Java` `LoRA` `Fine-tuning` `AI Engineering`
+`LLM` `Transformer` `RAG` `Embedding` `Vector Database` `pgvector` `Prompt Engineering` `Function Calling` `AI Agent` `Multi-Agent` `MCP` `Spring Boot` `Java` `LoRA` `Fine-tuning` `AI Engineering` `ReAct` `AutoGen` `LangGraph` `Context Engineering` `A2A` `Agentic RL`
 
 ## License
 
