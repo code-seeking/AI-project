@@ -323,3 +323,11 @@ Java 开发者推荐路径：
 - LangGraph 文档：https://langchain-ai.github.io/langgraph/
 - LangChain4j 文档：https://docs.langchain4j.dev/
 - Spring AI 文档：https://docs.spring.io/spring-ai/reference/
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 27 课：低代码平台 Agent 搭建](27-低代码平台Agent搭建.md) | [第 29 课：从 0 构建 Agent 框架](29-从0构建Agent框架.md) |

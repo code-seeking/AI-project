@@ -183,6 +183,23 @@ READY → DELETED（已删除，软删 + 定时清理向量）
 
 ## 五、企业级 RAG 性能优化
 
+```
+┌──────────────────────────────────────────────────────────┐
+│              RAG 性能优化全景                              │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  入库链路：                                            │
+│  [文档上传] → [异步队列] → [批量Embedding] → [并发入库] │
+│  优化点：批量500条/次 + 10线程并发 + MD5去重            │
+│                                                          │
+│  检索链路：                                            │
+│  [查询] → [查询改写] → [并行检索] → [RRF融合] → [Rerank]│
+│  优化点：HNSW索引 + 元数据预过滤 + 语义缓存           │
+│                                                          │
+│  目标：入库 5000段 < 5min  检索 P95 < 200ms            │
+└──────────────────────────────────────────────────────────┘
+```
+
 ### 5.1 入库性能
 
 ```
@@ -223,6 +240,51 @@ READY → DELETED（已删除，软删 + 定时清理向量）
 合并：RRF 融合（第 07 课）或 LLM 综合重排
 
 价值：不同查询类型各有擅长 → 综合效果最稳
+```
+
+### 5.4 Java 实现多路召回融合
+
+```java
+// 多路召回融合实现
+@Service
+public class HybridRetriever {
+    private final VectorSearchService vectorSearch;
+    private final FullTextSearchService fullTextSearch;
+    private final RerankService rerankService;
+
+    public List<Chunk> retrieve(String query, SearchContext ctx) {
+        // 1. 并行执行多路检索
+        CompletableFuture<List<Chunk>> vectorFuture = CompletableFuture
+            .supplyAsync(() -> vectorSearch.search(query, ctx.getKbId(), 20));
+        CompletableFuture<List<Chunk>> bm25Future = CompletableFuture
+            .supplyAsync(() -> fullTextSearch.search(query, ctx.getKbId(), 20));
+
+        List<Chunk> vectorResults = vectorFuture.join();
+        List<Chunk> bm25Results = bm25Future.join();
+
+        // 2. RRF 融合（Reciprocal Rank Fusion）
+        Map<String, Double> rrfScores = new HashMap<>();
+        int k = 60; // RRF 常数
+        for (int i = 0; i < vectorResults.size(); i++) {
+            rrfScores.merge(vectorResults.get(i).getId(),
+                1.0 / (k + i + 1), Double::sum);
+        }
+        for (int i = 0; i < bm25Results.size(); i++) {
+            rrfScores.merge(bm25Results.get(i).getId(),
+                1.0 / (k + i + 1), Double::sum);
+        }
+
+        // 3. 按 RRF 分数排序，取 Top-K
+        List<Chunk> merged = rrfScores.entrySet().stream()
+            .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+            .limit(10)
+            .map(e -> findChunk(e.getKey(), vectorResults, bm25Results))
+            .toList();
+
+        // 4. Rerank 精排
+        return rerankService.rerank(query, merged);
+    }
+}
 ```
 
 ---
@@ -274,6 +336,55 @@ READY → DELETED（已删除，软删 + 定时清理向量）
 
 ---
 
+## 七、用 AI 工具实际体验
+
+### 7.1 用 ChatGPT 生成 RAG 评估用例
+
+```
+🧑 提问（ChatGPT-4o）：
+"我正在为一个 HR 知识库 RAG 系统构建评估数据集。
+ 知识库内容包括：招聘制度、试用期管理、薪酬福利、面试流程。
+ 请帮我生成 20 条测试用例，每条包含：
+ - query（用户提问）
+ - 期望命中的文档类型
+ - 期望回答要点
+ - 难度级别（简单/中等/困难）"
+
+🤖 ChatGPT 生成了 20 条覆盖性很好的测试用例：
+- 简单（8 条）："试用期几个月？" → 直接事实查询
+- 中等（8 条）："技术岗位面试流程是什么？" → 多步骤流程
+- 困难（4 条）："如果候选人同时符合两个岗位，怎么安排面试？" → 跨文档推理
+
+💡 启发：
+  用 AI 工具批量生成评估用例，人工只需审核和修正，效率提升 10 倍。
+  关键发现：困难用例最有价值，因为它们测试了跨文档推理能力。
+```
+
+### 7.2 用 Claude 优化切块策略
+
+```
+🧑 提问（Claude 3.7）：
+"我的 RAG 系统用固定 500 字切块，但效果不好：
+ - 表格被切断了
+ - 列表只保留了一半
+ - 有些段落被从中间截断
+ 请帮我设计一个更智能的切块策略，支持以下文档类型：
+ 制度文档（Markdown）、表格文档、面试题库（Q&A 格式）"
+
+🤖 Claude 建议：
+- 策略 1：Markdown 感知切块（按 ## 标题分割，保持章节完整）
+- 策略 2：表格保护（表格作为整体，不切分，单独成块）
+- 策略 3：Q&A 对切块（每个问答对作为一个完整块）
+- 策略 4：重叠窗口（相邻块重叠 50 字，防止截断）
+- 实现建议：用 Unstructured.io 的 partition_auto() 自动识别文档结构
+
+💡 启发：
+  固定切块是最常见的 RAG 质量杀手。Claude 给出的“按文档类型选择切块策略”
+  思路非常实用，特别是表格保护和 Q&A 对切块。
+```
+
+---
+
 ## 八、与你项目的关联
 
 你的 Chat Portal 知识库已实现：
@@ -314,3 +425,12 @@ READY → DELETED（已删除，软删 + 定时清理向量）
 2. **文档更新后旧 chunk 没删干净会怎样？怎么避免？**
 3. **"无结果率"突然从 3% 涨到 15%，可能的原因有哪些？怎么排查？**
 4. **检索日志里积累的"用户提问"怎么变成评估集的新用例？流程是什么？**
+5. **RRF 融合和 LLM 重排各自的优缺点是什么？什么场景用哪个？**
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 15 课：模型选型与部署策略](15-模型选型与部署策略.md) | [第 17 课：生产级 Prompt 工程](17-生产级Prompt工程.md) |

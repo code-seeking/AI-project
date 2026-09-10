@@ -149,6 +149,153 @@ Assistant: "好的，我来分析..."
 
 ---
 
+## 五点五、用 AI 工具实际体验
+
+### 体验 1：用 OpenAI Tokenizer 工具可视化分词
+
+打开 OpenAI 官方 Tokenizer 工具：https://platform.openai.com/tokenizer
+
+```
+🧑 操作：
+在输入框中输入："候选人张三有5年Java开发经验"
+
+🖥️ 工具显示：
+Tokens: 15
+"候选" (token 847)
+"人" (token 2091)
+"张" (token 356)
+"三" (token 10234)
+"有" (token 521)
+"5" (token 19)
+"年" (token 1024)
+"Java" (token 8842)
+"开发" (token 3567)
+"经验" (token 2891)
+
+📝 解读：
+- 中文每个字通常是 1-2 个 token
+- 英文单词 "Java" 是 1 个 token（高频词）
+- 数字 "5" 是 1 个 token
+- 总共 15 个 token
+```
+
+### 体验 2：用 ChatGPT 理解 Token 对成本的影响
+
+```
+🧑 用户提问：
+请解释为什么 Token 数量会影响 AI 的成本？
+
+🤖 ChatGPT 回答：
+Token 数量影响 AI 成本的三个原因：
+
+1. 计算成本：
+   每个 token 都要经过 Transformer 的所有层（如 96 层）
+   计算量 = token 数 × 层数 × 隐藏维度 × 操作数
+   token 越多，GPU 计算时间越长
+
+2. 内存成本：
+   每个 token 需要存储中间结果（KV Cache）
+   1000 个 token ≈ 500MB 显存（7B 模型）
+   token 越多，显存占用越大
+
+3. API 计费：
+   OpenAI 按 token 收费：
+   - 输入：$0.03 / 1000 tokens
+   - 输出：$0.06 / 1000 tokens
+   
+   例：一份 2000 字的简历 ≈ 1500 tokens
+   分析一次成本 ≈ $0.045（输入）+ $0.03（输出）= $0.075
+   批量分析 1000 份简历 = $75
+
+📝 解读：这就是为什么你的项目中要优化简历提取，
+   减少不必要的 token，因为每个 token 都是钱。
+```
+
+### 体验 3：用 Claude 对比中英文的 Token 效率
+
+```
+🧑 用户提问（Claude）：
+请分别统计以下两句话的 token 数，并解释为什么不同：
+英文："The candidate has 5 years of Java experience"
+中文："候选人有5年Java开发经验"
+
+🤖 Claude 回答：
+英文版本：约 10-12 tokens
+中文版本：约 15-20 tokens
+
+原因分析：
+1. 训练数据偏差：
+   大多数 Tokenizer 在英文语料上训练
+   英文高频词被完整合并（如 "experience" = 1 token）
+   中文需要更多子词拆分
+
+2. 编码效率：
+   英文：一个词 = 1-2 tokens
+   中文：一个字 = 1-2 tokens（UTF-8 字节级）
+   
+3. 信息密度：
+   中文信息密度高（同样意思字数少）
+   但 token 数反而多
+   → 中文 AI 应用成本更高
+
+📝 解读：这就是为什么你的 HR 系统处理中文简历时，
+   要特别注意 token 消耗，建议先提取关键字段再分析。
+```
+
+---
+
+## 五点六、Java 开发者视角：用代码统计 Token
+
+```java
+/**
+ * Java 中统计 Token 数的三种方式
+ */
+public class TokenCounter {
+
+    /**
+     * 方式 1：调用 Ollama API（推荐，最准确）
+     */
+    public int countTokensWithOllama(String text) {
+        // 调用 Ollama 的 /api/embed 接口
+        String response = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:11434/api/embed"))
+            .POST(HttpRequest.BodyPublishers.ofString(
+                "{\"model\":\"bge-m3\",\"input\":\"" + text + "\"}"))
+            .build();
+        
+        // 返回的 prompt_eval_count 就是 token 数
+        JsonNode json = objectMapper.readTree(response);
+        return json.get("prompt_eval_count").asInt();
+    }
+
+    /**
+     * 方式 2：使用 jtokkit 库（本地计算，无需网络）
+     */
+    public int countTokensWithJtokkit(String text) {
+        // Maven: com.knuddels:jtokkit:1.0.0
+        EncodingRegistry registry = Encodings.newDefaultEncodingRegistry();
+        Encoding enc = registry.getEncoding(EncodingType.CL100K_BASE);
+        return enc.countTokens(text);
+    }
+
+    /**
+     * 方式 3：粗略估算（快速但不准确）
+     */
+    public int estimateTokens(String text) {
+        // 中文：每字约 1.5 tokens
+        // 英文：每词约 1.3 tokens
+        int chineseChars = text.replaceAll("[^\u4e00-\u9fa5]", "").length();
+        int englishWords = text.split("\\s+").length;
+        return (int) (chineseChars * 1.5 + englishWords * 1.3);
+    }
+}
+```
+
+> 💡 **Java 开发者建议**：生产环境用方式 1（最准确），
+> 开发测试用方式 2（无需网络），快速估算用方式 3。
+
+---
+
 ## 六、与你项目的关联
 
 ### 6.1 为什么你的 Ollama Embedding 需要统一分词？
@@ -344,4 +491,8 @@ curl http://localhost:11434/api/embed -d '{"model":"bge-m3","input":"候选人�
 
 ---
 
-**下一课**：[03-Prompt Engineering 提示工程](./03-PromptEngineering提示工程.md) —— 怎么跟 AI "说话"才能得到好结果？
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 01 课：Transformer 与 LLM 原理](01-Transformer与LLM原理.md) | [第 03 课：Prompt Engineering 提示工程](03-PromptEngineering提示工程.md) |

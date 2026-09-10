@@ -26,6 +26,8 @@ Demo 阶段：一个 Controller 直接调 LLM API，能返回结果就 OK
 
 ## 二、企业级 AI 分层架构
 
+![LLM 六层架构图](llm-six-layer-architecture.png)
+
 ```
 ┌─────────────────────────────────────────────────┐
 │ 接入层（API / Web / 消息队列）                     │
@@ -42,6 +44,9 @@ Demo 阶段：一个 Controller 直接调 LLM API，能返回结果就 OK
 │  私有化（Ollama / vLLM / 开源模型）               │
 └─────────────────────────────────────────────────┘
 ```
+
+> **架构演进建议**：初期可以用三层（接入→编排→模型），当 AI 调用超过 5 个入口时，
+> 必须抽出独立的 AI 服务层，否则模型切换、故障处理将变成噩梦。
 
 ### 为什么必须加"AI 服务层"？
 
@@ -100,6 +105,50 @@ for (int i = 0; i < retries; i++) {
     }
 }
 ```
+
+下面是一个更完整的 Spring Boot 风格的企业级重试组件，支持注解驱动：
+
+```java
+// 企业级 LLM 重试组件（Spring Boot）
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface LlmRetry {
+    int maxAttempts() default 3;
+    long initialDelayMs() default 1000;
+    Class<? extends Exception>[] retryOn() default {
+        RateLimitException.class, TimeoutException.class
+    };
+}
+
+@Component
+public class ResilientLlmClient {
+    private final RestTemplate restTemplate;
+    private final MeterRegistry metrics;
+
+    @LlmRetry(maxAttempts = 3, initialDelayMs = 1000,
+              retryOn = {RateLimitException.class, TimeoutException.class})
+    public ChatResponse call(String model, List<Message> messages) {
+        long start = System.currentTimeMillis();
+        try {
+            ChatResponse resp = restTemplate.postForObject(
+                "/v1/chat/completions", buildRequest(model, messages),
+                ChatResponse.class);
+            metrics.timer("llm.call.success", "model", model)
+                   .record(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
+            return resp;
+        } catch (Exception e) {
+            metrics.counter("llm.call.failure", "model", model, "error", e.getClass().getSimpleName())
+                   .increment();
+            throw e;
+        }
+    }
+}
+```
+
+**关键设计要点**：
+- `retryOn` 注解属性精确控制哪些异常可重试，避免对 400/401 等不可重试错误浪费资源
+- Micrometer `MeterRegistry` 自动记录成功/失败指标，接入 Prometheus + Grafana 即可可视化
+- 退避算法使用 `delay * 2 + random(0, 500)` 的抖动策略，防止多个客户端同时重试造成"惊群效应"
 
 ### 3.3 降级（Graceful Degradation）
 
@@ -250,7 +299,54 @@ Prompt 版本管理：
 
 ---
 
-## 八、与你项目的关联
+## 八、用 AI 工具实际体验
+
+### 8.1 用 ChatGPT 设计企业 AI 架构
+
+```
+🧑 提问（ChatGPT-4o）：
+"我正在设计一个企业级 AI 招聘系统，需要支持：
+ 1. 每天 5000 份简历的 AI 分析
+ 2. 知识库问答（HR 制度、面试题库）
+ 3. AI 面试评估
+ 4. 要求模型故障时自动切换
+请帮我设计分层架构，并说明每一层的职责和关键技术选型。"
+
+🤖 ChatGPT 关键回答摘要：
+- 建议四层架构：接入层→编排层→AI Gateway→模型层
+- AI Gateway 推荐 LiteLLM 或自建，负责路由/降级/计费
+- 异步任务用 RabbitMQ + 任务状态机
+- 流式输出用 SSE（Server-Sent Events）
+- 关键指标：TTFT < 2s，成功率 > 99%
+
+💡 启发：
+  ChatGPT 给出的架构和本课第二节高度一致，验证了分层设计的合理性。
+  额外收获：它提到了 LiteLLM 作为开源 AI Gateway 的选择，值得评估。
+```
+
+### 8.2 用 Claude 分析降级策略
+
+```
+🧑 提问（Claude 3.7）：
+"请帮我设计一个 LLM 调用的 5 级降级策略，场景是 HR 简历分析系统，
+ 要求每一级说明：触发条件、降级方式、用户体验影响、恢复策略。"
+
+🤖 Claude 关键回答摘要：
+- L0（正常）：主模型 DeepSeek → 延迟 < 5s
+- L1（主模型劣化）：延迟 > 8s → 切备用 Qwen-Max
+- L2（主+备均故障）：→ 降级到 GPT-4o-mini（更便宜但可用）
+- L3（所有云模型故障）：→ 本地 Ollama 7B 基础分析
+- L4（全部不可用）：→ 返回模板化分析 + 通知用户稍后重试
+- 每级恢复都有"探测→灰度→回切"三步流程
+
+💡 启发：
+  Claude 的降级方案比我们自己想的更细致，特别是 L4 的"模板化兜底"
+  思路很好——即使 AI 全挂，也能给用户一个"半成品"结果而非空白。
+```
+
+---
+
+## 九、与你项目的关联
 
 你的 HR 系统已经实践的企业级设计：
 
@@ -271,7 +367,7 @@ Prompt 版本管理：
 
 ---
 
-## 九、本课小结
+## 十、本课小结
 
 ```
 核心要点：
@@ -286,9 +382,18 @@ Prompt 版本管理：
 
 ---
 
-## 十、思考题
+## 十一、思考题
 
 1. **如果 DeepSeek API 连续 10 分钟不可用，你的系统会发生什么？逐环节分析。**
 2. **"AI 服务层"和直接调用相比，多花多少开发成本？值不值？什么规模需要？**
 3. **流式输出的坑有哪些？**（提示：连接中断、前端渲染、计费时点）
 4. **你们项目的 AI 调用有没有统一的失败日志？没有的话设计一个。**
+5. **对比 Resilience4j 的 CircuitBreaker 和自建熔断器，各自的优缺点是什么？**
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 12 课：AI 应用工程化](12-AI应用工程化.md) | [第 14 课：Token 经济与成本优化](14-Token经济与成本优化.md) |

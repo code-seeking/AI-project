@@ -300,6 +300,193 @@ String prompt = """
 
 ---
 
+## 六点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 对比有无角色设定的效果
+
+```
+🧑 测试 1（无角色）：
+请分析这份简历：张三，5年Java经验，熟悉Spring Boot、MySQL。
+
+🤖 ChatGPT 回答：
+张三有5年Java开发经验，熟悉Spring Boot和MySQL。
+这些是常见的后端开发技能。
+
+🧑 测试 2（有角色）：
+你是一名有10年经验的HR招聘专家，擅长技术岗位人才评估。
+请分析这份简历：张三，5年Java经验，熟悉Spring Boot、MySQL。
+
+🤖 ChatGPT 回答：
+作为HR招聘专家，我从以下几个维度分析张三的简历：
+
+【优势分析】
+1. 经验年限：5年Java开发，属于中级开发者，正是企业最需要的层级
+2. 技术栈匹配：Spring Boot + MySQL 是主流后端组合，说明项目经验丰富
+3. 稳定性：5年经验暗示在一家公司长期发展，稳定性好
+
+【待确认项】
+1. 项目规模：需了解是大型分布式系统还是小型单体应用
+2. 微服务经验：Spring Boot通常配合微服务，需确认实际经验
+3. 团队规模：是否带人经验，影响晋升潜力
+
+【建议】
+建议进入技术面试，重点考察微服务架构设计和实际项目成果。
+
+📝 解读：角色设定激活了模型的"专家知识模式"，
+   输出更专业、更有结构、更有深度。
+```
+
+### 体验 2：用 Claude 体验 Few-shot 的威力
+
+```
+🧑 用户提问（Claude）：
+请从以下简历中提取信息，格式如下：
+
+示例：
+输入："张三，男，2018年毕业于清华大学计算机系"
+输出：{"name": "张三", "gender": "男", "education": [{"school": "清华大学", "major": "计算机", "year": "2018"}]}
+
+现在提取："李四，女，2020年北京大学软件工程硕士毕业"
+
+🤖 Claude 回答：
+{"name": "李四", "gender": "女", "education": [{"school": "北京大学", "major": "软件工程", "year": "2020", "degree": "硕士"}]}
+
+📝 解读：模型通过示例"学会"了输出格式，
+   比纯文字描述"请用JSON格式输出"更有效。
+   这就是 Few-shot Learning 的威力。
+```
+
+### 体验 3：用 ChatGPT 体验思维链（CoT）
+
+```
+🧑 用户提问（无思维链）：
+候选人：5年Java经验，期望薪资25K
+岗位要求：3年+Java，预算20K
+是否匹配？
+
+🤖 ChatGPT 回答：
+不匹配，薪资要求超出预算。
+
+🧑 用户提问（有思维链）：
+请按以下步骤分析人岗匹配：
+1. 先列出候选人的关键条件
+2. 再列出岗位的关键要求
+3. 逐项对比
+4. 给出结论和建议
+
+候选人：5年Java经验，期望薪资25K，擅长Spring Cloud
+岗位：要求3年+Java，预算20K，需要微服务经验
+
+🤖 ChatGPT 回答：
+【步骤1：候选人条件】
+- 经验：5年Java开发
+- 薪资：期望25K
+- 技能：Spring Cloud（微服务）
+
+【步骤2：岗位要求】
+- 经验：3年+Java
+- 预算：20K
+- 技能：微服务经验
+
+【步骤3：逐项对比】
+✅ 经验匹配：5年 > 3年，超出要求
+✅ 技能匹配：Spring Cloud = 微服务经验，完全匹配
+❌ 薪资不匹配：25K > 20K，超出25%
+
+【步骤4：结论与建议】
+技术匹配度：90%（非常匹配）
+薪资差距：5K（25%）
+
+建议：
+1. 尝试谈薪：说明公司福利、发展空间，争取降到22K以内
+2. 申请特批：候选人技术优秀，可申请预算上浮
+3. 备选方案：如无法达成一致，可推荐其他更高预算岗位
+
+📝 解读：思维链让模型"先分析再结论"，
+   输出更全面、更准确、更有参考价值。
+```
+
+---
+
+## 六点六、Java 开发者视角：Prompt 模板管理最佳实践
+
+```java
+/**
+ * Java 中的 Prompt 模板管理（生产级实践）
+ */
+public class PromptTemplateManager {
+
+    /**
+     * 方式 1：使用 Java Text Block（JDK 15+）
+     */
+    public String buildResumeAnalysisPrompt(String resumeText) {
+        return """
+            你是一名资深HR招聘专家，擅长技术岗位人才评估。
+            
+            请分析以下候选人简历，输出JSON格式：
+            {
+              "score": 匹配度分数(0-100),
+              "strengths": [优势列表],
+              "weaknesses": [劣势列表],
+              "recommendation": 是否推荐(true/false)
+            }
+            
+            简历内容：
+            %s
+            
+            约束：只基于简历内容分析，不要编造信息。
+            """.formatted(resumeText);
+    }
+
+    /**
+     * 方式 2：使用模板引擎（如 FreeMarker）
+     */
+    public String buildPromptWithTemplate(
+            String candidateName, 
+            String positionName,
+            int matchScore) {
+        
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_31);
+        cfg.setClassForTemplateLoading(getClass(), "/templates");
+        
+        Template template = cfg.getTemplate("recommendation.ftl");
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("candidateName", candidateName);
+        data.put("positionName", positionName);
+        data.put("matchScore", matchScore);
+        
+        StringWriter out = new StringWriter();
+        template.process(data, out);
+        return out.toString();
+    }
+
+    /**
+     * 方式 3：从数据库加载 Prompt 模板（推荐）
+     */
+    @Autowired
+    private PromptTemplateRepository promptRepo;
+
+    public String buildPromptFromDB(String templateId, Map<String, Object> vars) {
+        PromptTemplate template = promptRepo.findById(templateId)
+            .orElseThrow(() -> new RuntimeException("模板不存在: " + templateId));
+        
+        String content = template.getContent();
+        // 简单变量替换
+        for (Map.Entry<String, Object> entry : vars.entrySet()) {
+            content = content.replace("{{" + entry.getKey() + "}}", 
+                                     entry.getValue().toString());
+        }
+        return content;
+    }
+}
+```
+
+> 💡 **生产建议**：Prompt 从代码中抽离到数据库或配置文件，
+> 支持热更新、版本管理、A/B测试，这是工程化的关键一步。
+
+---
+
 ## 七、与你项目的关联
 
 你在 HR 系统中用到的 Prompt 场景：
@@ -511,4 +698,8 @@ Prompt 里的每个字都花钱（输入计费）
 
 ---
 
-**下一课**：[04-Embedding 与语义空间](./04-Embedding与语义空间.md) —— 计算机怎么表示"意思相近"？
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) | [第 04 课：Embedding 与语义空间](04-Embedding与语义空间.md) |

@@ -81,6 +81,9 @@ Transformer 的 Self-Attention **同时看所有词**：
 
 ## 三、Transformer 的整体架构
 
+> 📊 **架构图参考**：
+> ![Transformer 整体架构](transformer-architecture.png)
+
 ```
 输入文本
    ↓
@@ -244,6 +247,150 @@ ChatResponse response = chatModel.call(prompt);
 - 人岗匹配 → 简历 Embedding + 职位 Embedding → 相似度计算
 - AI 面试 → Prompt + LLM → 面试评估
 - RAG 问答 → 检索相关文档 → 注入 Prompt → LLM 生成回答
+
+--
+
+## 七点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 感受 Self-Attention
+
+直接在 ChatGPT 中提问，感受模型如何"理解"语言：
+
+```
+🧑 用户提问：
+请分析这句话中"他"指的是谁：
+"张三把简历投给了李四推荐的公司，他很感激"
+
+🤖 ChatGPT 回答：
+在这句话中，"他"最可能指的是"张三"。
+分析过程：
+1. "张三把简历投给了李四推荐的公司" —— 张三是动作的发起者
+2. "他很感激" —— 感激的对象通常是受益方
+3. 张三因为李四的推荐而获得了投递机会，所以张三是感激的一方
+4. 因此"他" = 张三
+
+📝 解读：模型内部通过 Self-Attention 把"他"与"张三"关联起来，
+   同时分析了"感激"的语义方向，才得出正确结论。
+```
+
+### 体验 2：用 Claude 对比不同 Temperature 的输出
+
+```
+🧑 用户提问（Claude，Temperature=0）：
+Java 的三大特性是什么？请简洁回答。
+
+🤖 Claude 回答：
+Java 的三大特性是：
+1. 封装（Encapsulation）
+2. 继承（Inheritance）
+3. 多态（Polymorphism）
+
+🧑 再次提问（同样 Temperature=0）：
+Java 的三大特性是什么？
+
+🤖 Claude 回答：（完全相同）
+Java 的三大特性是：
+1. 封装（Encapsulation）
+2. 继承（Inheritance）
+3. 多态（Polymorphism）
+
+📝 解读：T=0 时输出几乎确定性，多次调用结果一致。
+   这就是为什么分析类任务用低 Temperature。
+```
+
+### 体验 3：用 ChatGPT 理解自回归生成
+
+```
+🧑 用户提问：
+请一个字一个字地解释什么是"微服务"。
+
+🤖 ChatGPT 回答：
+微：小，指规模小
+服：服务，指提供某种功能
+务：事务，与"服"合在一起即"服务"
+
+所以"微服务"= 小的服务，即把一个大型应用拆分成多个
+小型、独立部署的服务单元，每个服务负责一个具体的
+业务功能。
+
+📝 解读：模型每次只生成一个 token，但每一步都基于
+   前面所有已生成的 token 来计算概率分布。
+   流式输出（Streaming）就是你看到它"逐字打出"的效果。
+```
+
+---
+
+## 七点六、Java 开发者视角：用代码模拟 Transformer 核心逻辑
+
+```java
+/**
+ * 简化版 Self-Attention 的 Java 实现（教学用途）
+ * 帮助 Java 开发者理解 Attention 的数学本质
+ */
+public class SimpleSelfAttention {
+
+    /**
+     * 计算注意力权重
+     * @param queries Q 矩阵 [seqLen × d_k]
+     * @param keys    K 矩阵 [seqLen × d_k]
+     * @param values  V 矩阵 [seqLen × d_v]
+     * @return 注意力输出 [seqLen × d_v]
+     */
+    public double[][] attention(double[][] queries, double[][] keys, double[][] values) {
+        int seqLen = queries.length;
+        int dk = queries[0].length;
+        double scale = Math.sqrt(dk);
+
+        // Step 1: 计算注意力分数矩阵 QK^T / sqrt(d_k)
+        double[][] scores = new double[seqLen][seqLen];
+        for (int i = 0; i < seqLen; i++) {
+            for (int j = 0; j < seqLen; j++) {
+                double dotProduct = 0;
+                for (int k = 0; k < dk; k++) {
+                    dotProduct += queries[i][k] * keys[j][k];
+                }
+                scores[i][j] = dotProduct / scale;  // 缩放
+            }
+        }
+
+        // Step 2: Softmax 归一化（每行和为 1）
+        double[][] weights = softmax(scores);
+
+        // Step 3: 加权求和 weights × V
+        int dv = values[0].length;
+        double[][] output = new double[seqLen][dv];
+        for (int i = 0; i < seqLen; i++) {
+            for (int j = 0; j < seqLen; j++) {
+                for (int k = 0; k < dv; k++) {
+                    output[i][k] += weights[i][j] * values[j][k];
+                }
+            }
+        }
+        return output;
+    }
+
+    private double[][] softmax(double[][] matrix) {
+        double[][] result = new double[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            double max = Double.NEGATIVE_INFINITY;
+            for (double v : matrix[i]) max = Math.max(max, v);
+            double sum = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                result[i][j] = Math.exp(matrix[i][j] - max);
+                sum += result[i][j];
+            }
+            for (int j = 0; j < matrix[i].length; j++) {
+                result[i][j] /= sum;
+            }
+        }
+        return result;
+    }
+}
+```
+
+> 💡 **Java 开发者注意**：实际项目中不会手写 Attention，
+> 而是通过 Spring AI / LangChain4j 调用已训练好的模型 API。
+> 理解底层原理有助于调试和优化 AI 应用。
 
 ---
 
@@ -421,4 +568,8 @@ Top-P（Nucleus）：取累积概率刚超过 P 的最小集合再采样
 
 ---
 
-**下一课**：[02-Tokenization 分词原理](./02-Tokenization分词原理.md) —— 模型看到的不是文字，而是数字
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| — | [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) |

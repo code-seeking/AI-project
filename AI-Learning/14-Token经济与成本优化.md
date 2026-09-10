@@ -92,6 +92,22 @@
 
 ## 四、成本优化六大策略（按收益排序）
 
+```
+┌──────────────────────────────────────────────────────┐
+│              成本优化策略全景图                        │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  策略 1: 模型分级  ████████████████████  节省 60-90% │
+│  策略 2: Prompt瘦身 ████████████████    节省 30-50% │
+│  策略 3: 输出控制  ██████████████      节省 20-40% │
+│  策略 4: 语义缓存  ████████████        节省 20-40% │
+│  策略 5: 批量合并  ████████            节省 10-30% │
+│  策略 6: 检索优化  ██████              节省 10-20% │
+│                                                      │
+│  组合使用可叠加，但注意质量回归测试！              │
+└──────────────────────────────────────────────────────┘
+```
+
 ### 策略 1：模型分级（最大杠杆）⭐
 
 ```
@@ -107,6 +123,38 @@
   任务类型 → 决定模型等级
   输入长度 → 短文本用便宜模型
   错误重试 → 重试时升级模型（第二次用更强模型）
+```
+
+下面是 Java 实现的模型分级路由器：
+
+```java
+// 模型分级路由器（Spring AI 风格）
+@Component
+public class ModelRouter {
+    private final LlmClient ollamaClient;     // T0 本地
+    private final LlmClient deepseekClient;   // T1 便宜
+    private final LlmClient qwenMaxClient;    // T2 中等
+    private final LlmClient gpt4oClient;      // T3 强力
+
+    public ChatResponse route(LlmRequest req) {
+        ModelTier tier = classifyTask(req);
+        return switch (tier) {
+            case T0_LOCAL   -> ollamaClient.call(req);
+            case T1_CHEAP   -> deepseekClient.call(req);
+            case T2_MEDIUM  -> qwenMaxClient.call(req);
+            case T3_STRONG  -> gpt4oClient.call(req);
+        };
+    }
+
+    private ModelTier classifyTask(LlmRequest req) {
+        // 规则引擎：根据任务类型、输入长度、复杂度分级
+        if (req.taskType() == TaskType.KEYWORD_EXTRACT) return ModelTier.T0_LOCAL;
+        if (req.inputTokens() < 500 && req.taskType() == TaskType.INFO_EXTRACT)
+            return ModelTier.T1_CHEAP;
+        if (req.taskType() == TaskType.COMPLEX_REASONING) return ModelTier.T3_STRONG;
+        return ModelTier.T2_MEDIUM; // 默认中等
+    }
+}
 ```
 
 ### 策略 2：Prompt 瘦身（输入侧）⭐
@@ -240,6 +288,49 @@
 
 ---
 
+## 六、用 AI 工具实际体验
+
+### 6.1 用 ChatGPT 估算成本
+
+```
+🧑 提问（ChatGPT-4o）：
+"我需要一个 Python 脚本，能够计算不同 LLM 模型的成本对比。
+ 输入参数：每日调用次数、平均输入 token、平均输出 token、各模型单价。
+ 输出：每日/每月/每年成本对比表。"
+
+🤖 ChatGPT 生成了完整的 Python 脚本，包含：
+- dataclass 定义模型价格
+- pandas DataFrame 生成对比表
+- matplotlib 可视化成本曲线
+- 支持批量/单次两种模式
+
+💡 启发：
+  用 AI 工具生成成本计算脚本，几分钟就能得到一个可运行的工具，
+  比自己写 Excel 公式快得多。可以把脚本改造成团队的内部工具。
+```
+
+### 6.2 用 Claude 分析 Prompt 瘦身效果
+
+```
+🧑 提问（Claude 3.7）：
+"以下是一个简历分析的 Prompt（1800 tokens），请帮我精简到 900 tokens 以内，
+ 同时保持分析质量不下降。请说明你精简了哪些部分，为什么这些部分可以精简。"
+
+🤖 Claude 精简策略：
+- 删除冗余的角色设定描述（-200 tokens）："你是一名拥有20年经验的..." → "你是HR专家"
+- 合并重复的输出格式要求（-150 tokens）
+- Few-shot 示例从 3 个减到 1 个（-300 tokens）
+- 精简系统约束措辞（-150 tokens）
+- 保留核心分析维度和 JSON schema（不动）
+- 总计：1800 → 880 tokens，质量回归测试通过率 98%
+
+💡 启发：
+  Claude 特别擅长"精简文本同时保留语义"，这正是 Prompt 瘦身的核心能力。
+  关键发现：Few-shot 示例是 token 大户，减少示例数量是最高效的瘦身手段。
+```
+
+---
+
 ## 七、本课小结
 
 ```
@@ -260,6 +351,7 @@
 2. **哪些任务可以降到本地 Ollama？哪些不能？判断标准是什么？**
 3. **语义缓存命中率低（<5%）说明什么？怎么调？**
 4. **如果预算砍半，你的 AI 功能怎么保？列出租约级方案。**
+5. **设计一个成本异常检测算法：如何区分"正常业务增长"和"异常成本飙升"？**
 
 ---
 
@@ -269,3 +361,11 @@
 2. 对最长的 Prompt 做一次瘦身（目标减 30%），用黄金用例验证质量
 3. 为你的 AI 功能设计一张成本报表 SQL（按功能/模型/日期统计）
 4. 设计模型分级路由表：哪些任务用哪级模型
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 13 课：企业级 LLM 应用架构设计](13-企业级LLM应用架构设计.md) | [第 15 课：模型选型与部署策略](15-模型选型与部署策略.md) |

@@ -41,6 +41,9 @@ Agent = 项目经理：你给目标，它自己拆任务、调资源、推进、
 
 ## 二、Agent 的核心循环：ReAct
 
+> 📊 **架构图参考**：
+> ![AI Agent 架构](agent-architecture.png)
+
 **ReAct = Reasoning（推理）+ Acting（行动）**
 
 ```
@@ -236,6 +239,237 @@ public String runAgent(String goal) {
 5. 成本控制（token 上限，超限停止）
 6. 审计日志（全程记录，可追溯）
 ```
+
+---
+
+## 六点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 体验 Agent 的 ReAct 循环
+
+```
+🧑 用户提问（ChatGPT，已启用Agent模式）：
+为"Java后端开发"岗位推荐3个候选人
+
+🤖 ChatGPT Agent 执行过程：
+
+[循环1：思考]
+Thought: 我需要先了解岗位要求
+Action: getPositionInfo(positionId=5)
+Observation: 岗位要求 3年+ Java、微服务经验、预算20K
+
+[循环2：思考]
+Thought: 根据岗位要求搜索候选人
+Action: searchCandidates(keyword="Java 微服务", limit=20)
+Observation: 返回20个候选人
+
+[循环3：思考]
+Thought: 需要评估匹配度，先看每个候选人的简历
+Action: getResumeAnalysis(candidateId=101)
+Observation: 张三，5年Java，有Spring Cloud经验，匹配度高
+
+[循环4：思考]
+Thought: 已找到匹配候选人，汇总结果
+Final Answer: 推荐张三（匹配度92%）、李四（88%）、王五（85%）
+
+📝 解读：Agent 自己决定调用哪些工具、调用顺序，
+   每一步都基于真实的工具结果，这就是"自主规划+执行"。
+```
+
+### 体验 2：用 Claude 体验 Agent 的任务分解
+
+```
+🧑 用户提问（Claude）：
+分析本月所有新入职候选人的表现
+
+🤖 Claude Agent 执行过程：
+
+[规划阶段]
+Thought: 这是一个复杂任务，需要拆解
+Plan:
+1. 查询本月入职候选人列表
+2. 对每人拉取绩效数据
+3. 汇总分析
+4. 生成报告
+
+[执行阶段]
+Step 1: getNewHires(month="2026-01")
+→ 返回10个候选人
+
+Step 2: 循环处理每个候选人
+  - getPerformanceData(candidateId=101)
+  - getPerformanceData(candidateId=102)
+  - ...
+
+Step 3: analyzePerformance(allData)
+→ 生成分析报告
+
+[最终回答]
+本月新入职10人，整体表现良好：
+- 优秀：3人（张三、李四、王五）
+- 良好：5人
+- 待观察：2人
+详细报告已生成...
+
+📝 解读：Agent 能自己拆解复杂任务，
+   并逐步执行，这就是"任务分解"能力。
+```
+
+### 体验 3：用ChatGPT理解Agent的失败模式
+
+```
+🧑 用户提问：
+为什么我的Agent经常陷入死循环？
+
+🤖 ChatGPT 回答：
+Agent 死循环的常见原因：
+
+【原因1：工具一直失败】
+例：查询候选人信息，但ID不存在
+→ 工具返回错误
+→ Agent 重试（换个ID）
+→ 还是失败
+→ 继续重试...
+
+解决：设置最大重试次数（如3次）
+
+【原因2：模型不知道何时停止】
+例：搜索候选人，返回结果后
+→ Agent 觉得"信息不够"，继续搜索
+→ 还是觉得"不够"，继续搜索...
+
+解决：System Prompt 明确"找到答案就停止"
+
+【原因3：工具返回信息不清晰】
+例：工具返回"Error"
+→ Agent 不知道什么意思，继续调用
+
+解决：工具返回详细的错误信息
+
+【原因4：没有最大迭代限制】
+Agent 无限循环，token 烧完
+
+解决：设置 MAX_ITERATIONS（如10轮）
+
+【最佳实践】
+1. 最大迭代次数（防死循环）
+2. 超时控制（防长时间挂起）
+3. 工具返回详细错误信息
+4. System Prompt 明确"何时停止"
+5. 成本控制（token 上限）
+
+📝 解读：Agent 的"自主性"是双刃剑，
+   必须加"安全护栏"才能生产使用。
+```
+
+---
+
+## 六点六、Java 开发者视角：Agent 主循环实现
+
+```java
+/**
+ * Java 中的 Agent 主循环实现
+ */
+@Service
+public class AgentService {
+
+    @Autowired
+    private ChatModel chatModel;
+
+    @Autowired
+    private ToolExecutor toolExecutor;
+
+    private static final int MAX_ITERATIONS = 10;
+
+    /**
+     * Agent 主循环
+     */
+    public String runAgent(String goal, List<Tool> tools) {
+        // 初始化消息列表
+        List<Message> messages = new ArrayList<>();
+        
+        // 系统提示
+        messages.add(SystemMessage.builder()
+            .content("你是一个HR招聘专家Agent。你的目标是高效准确地完成招聘任务。\n" +
+                    "规则：\n" +
+                    "1. 先理解目标，再规划步骤\n" +
+                    "2. 优先使用工具获取真实数据，不要凭记忆回答\n" +
+                    "3. 每完成一个步骤，检查结果是否符合预期\n" +
+                    "4. 遇到无法解决的问题，如实告知用户\n" +
+                    "5. 找到答案后立即停止，不要无限循环")
+            .build());
+        
+        // 用户目标
+        messages.add(UserMessage.builder().content(goal).build());
+        
+        // 主循环
+        for (int iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+            // 调用模型
+            ChatResponse response = chatModel.call(
+                new Prompt(messages, tools)
+            );
+            
+            AssistantMessage assistantMessage = response.getResult().getOutput();
+            messages.add(assistantMessage);
+            
+            // 检查是否有工具调用
+            if (assistantMessage.hasToolCalls()) {
+                // 执行工具
+                for (ToolCall toolCall : assistantMessage.getToolCalls()) {
+                    try {
+                        Object result = toolExecutor.execute(
+                            toolCall.getName(),
+                            toolCall.getArguments()
+                        );
+                        
+                        // 把工具结果返回给模型
+                        messages.add(ToolMessage.builder()
+                            .toolCallId(toolCall.getId())
+                            .content(result.toString())
+                            .build());
+                        
+                    } catch (Exception e) {
+                        // 工具执行失败，把错误信息返回
+                        messages.add(ToolMessage.builder()
+                            .toolCallId(toolCall.getId())
+                            .content("Error: " + e.getMessage())
+                            .build());
+                    }
+                }
+                continue;  // 继续循环
+            }
+            
+            // 没有工具调用，说明Agent已经完成
+            return assistantMessage.getContent();
+        }
+        
+        return "已达到最大执行次数（" + MAX_ITERATIONS + "轮），任务未完成。";
+    }
+
+    /**
+     * 使用示例
+     */
+    public void example() {
+        List<Tool> tools = List.of(
+            Tool.builder().name("searchCandidates").build(),
+            Tool.builder().name("getResumeAnalysis").build(),
+            Tool.builder().name("getPositionInfo").build()
+        );
+        
+        String result = runAgent(
+            "为Java后端开发岗位推荐3个候选人",
+            tools
+        );
+        
+        System.out.println(result);
+    }
+}
+```
+
+> 💡 **生产建议**：
+> - 必须设置 MAX_ITERATIONS（如10轮）
+> - 工具执行失败要把错误信息返回给模型
+> - System Prompt 明确"找到答案就停止"
+> - 记录每轮的 Thought/Action/Observation，便于调试
 
 ---
 
@@ -484,4 +718,8 @@ Agent 比单次调用危险得多：
 
 ---
 
-**下一课**：[10-Multi-Agent 多智能体协作](./10-MultiAgent多智能体协作.md) —— 多个 AI 角色分工合作
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) | [第 10 课：Multi-Agent 多智能体协作](10-MultiAgent多智能体协作.md) |

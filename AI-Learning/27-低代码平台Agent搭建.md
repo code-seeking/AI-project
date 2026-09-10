@@ -347,3 +347,11 @@
 - FastGPT GitHub：https://github.com/labring/FastGPT
 - n8n GitHub：https://github.com/n8n-io/n8n
 - Hello-Agents 第五章：https://hello-agents.datawhale.cc/#/chapter5/
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 26 课：Agent 经典范式构建](26-Agent经典范式构建.md) | [第 28 课：主流 Agent 框架实践](28-主流Agent框架实践.md) |

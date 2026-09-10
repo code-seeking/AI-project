@@ -416,3 +416,11 @@ GPT-4o 回复：
 - GAIA 基准：https://huggingface.co/gaia-benchmark
 - TRL 训练库：https://github.com/huggingface/trl
 - 第 18 课 LoRA 微调：[18-LLM微调实战](./18-LLM微调实战.md)
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 31 课：Agent 通信协议](31-Agent通信协议.md) | — |

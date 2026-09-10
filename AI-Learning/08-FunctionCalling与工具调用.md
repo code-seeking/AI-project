@@ -213,6 +213,242 @@ String answer = chatClient.prompt()
 
 ---
 
+## 六点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 体验 Function Calling
+
+```
+🧑 用户提问（ChatGPT，已启用Function Calling）：
+帮我查一下候选人张三的手机号
+
+🤖 ChatGPT 内部流程：
+[模型看到可用工具：getCandidateByName, getCandidateById]
+[模型决定调用工具]
+
+🔧 工具调用：
+getCandidateByName(name="张三")
+
+🔧 工具返回：
+{
+  "id": 123,
+  "name": "张三",
+  "phone": "13800138000",
+  "email": "zhangsan@example.com"
+}
+
+🤖 ChatGPT 最终回答：
+候选人张三的手机号是 13800138000。
+
+📝 解读：模型自己决定调用哪个工具、传什么参数，
+   但真正执行的是你的代码，模型只负责"决策"和"组织回答"。
+```
+
+### 体验 2：用 Claude 体验多轮工具调用
+
+```
+🧑 用户提问（Claude）：
+把张三的简历发给他的面试官王经理
+
+🤖 Claude 内部流程：
+
+[第1轮：模型决定需要查两个人]
+🔧 工具调用1：getCandidateByName(name="张三")
+🔧 工具调用2：getInterviewerByName(name="王经理")
+
+[第1轮：工具返回]
+结果1：{id: 123, name: "张三", resume_url: "..."}
+结果2：{id: 456, name: "王经理", email: "wang@example.com"}
+
+[第2轮：模型决定发送邮件]
+🔧 工具调用3：sendEmail(
+  to="wang@example.com",
+  subject="候选人简历：张三",
+  body="请查收张三的简历..."
+)
+
+[第2轮：工具返回]
+结果3：{status: "sent", message_id: "msg_789"}
+
+[第3轮：模型生成最终回答]
+🤖 Claude 最终回答：
+已将张三的简历发送给王经理（wang@example.com）。
+
+📝 解读：多轮工具调用让模型能完成复杂任务，
+   每一步都由模型决策，但每步都基于真实的工具结果。
+```
+
+### 体验 3：用ChatGPT理解工具描述质量的影响
+
+```
+🧑 用户提问：
+为什么我的Function Calling经常调错工具？
+
+🤖 ChatGPT 回答：
+工具描述质量是调用准确率的关铹因素：
+
+【差描述 vs 好描述】
+
+差描述：
+@Description("getUser")
+→ 模型不知道什么时候用，可能乱调
+
+好描述：
+@Description("根据候选人ID查询候选人基本信息，包括姓名、联系方式、工作经历")
+→ 模型能判断"查候选人"应该用这个
+
+差描述：
+@Description("search")
+→ 太模糊，模型不知道搜什么
+
+好描述：
+@Description("当用户想查找候选人信息时使用，支持按姓名/技能/岗位搜索")
+→ 明确"触发条件"，模型更容易匹配意图
+
+【工具命名】
+差：doSomething, helper, process
+好：search_candidates, getCandidateById, createInterview
+
+【工具数量】
+< 10个：选对率高
+10-20个：还行
+> 20个：明显下降 → 需要"工具分组/路由"
+
+【最佳实践】
+1. 描述要说明"什么时候用"和"干什么"
+2. 参数要说明"传什么"
+3. 工具数量控制在20个以内
+4. 用Few-shot示例教模型何时调用
+
+📝 解读：工具描述就像函数的Javadoc，
+   写得越清晰，模型越能正确调用。
+```
+
+---
+
+## 六点六、Java 开发者视角：完整的 Function Calling 实现
+
+```java
+/**
+ * Java + Spring AI 的完整 Function Calling 实现
+ */
+@Service
+public class FunctionCallingService {
+
+    @Autowired
+    private ChatClient chatClient;
+
+    /**
+     * 1. 定义工具函数（用注解描述）
+     */
+    @Component
+    public class CandidateTools {
+
+        @Description("根据候选人ID查询候选人基本信息，包括姓名、联系方式、工作经历")
+        public CandidateInfo getCandidateById(
+                @Parameter(description = "候选人ID，如：123") Long id) {
+            return candidateMapper.selectById(id);
+        }
+
+        @Description("当用户想查找候选人信息时使用，支持按姓名/技能/岗位搜索")
+        public List<CandidateInfo> searchCandidates(
+                @Parameter(description = "搜索关键字，如：Java、张三") String keyword,
+                @Parameter(description = "最多返回条数，默认10", required = false) Integer limit) {
+            return candidateMapper.search(keyword, limit == null ? 10 : limit);
+        }
+
+        @Description("发送邮件给指定用户")
+        public EmailResult sendEmail(
+                @Parameter(description = "收件人邮箱") String to,
+                @Parameter(description = "邮件主题") String subject,
+                @Parameter(description = "邮件内容") String body) {
+            // 实际发送邮件的逻辑
+            return emailService.send(to, subject, body);
+        }
+    }
+
+    /**
+     * 2. 注册工具到ChatClient
+     */
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder builder,
+                                  CandidateTools candidateTools) {
+        return builder
+            .defaultSystem("你是一个HR助手，可以查询候选人信息、发送邮件")
+            .defaultTools(candidateTools)  // 注册工具
+            .build();
+    }
+
+    /**
+     * 3. 调用（模型自动决定调用哪个工具）
+     */
+    public String chat(String userMessage) {
+        return chatClient.prompt()
+            .user(userMessage)
+            .call()
+            .content();
+        // 底层流程：
+        // 1. 模型看到可用工具
+        // 2. 模型决定调用哪个工具（如果需要）
+        // 3. Spring AI自动执行工具
+        // 4. 把结果返回给模型
+        // 5. 模型生成最终回答
+    }
+
+    /**
+     * 4. 手动处理工具调用（高级用法）
+     */
+    public String chatWithManualToolHandling(String userMessage) {
+        ChatResponse response = chatClient.prompt()
+            .user(userMessage)
+            .call()
+            .chatResponse();
+        
+        // 检查是否有工具调用
+        if (response.hasToolCalls()) {
+            for (ToolCall toolCall : response.getToolCalls()) {
+                String toolName = toolCall.getName();
+                String args = toolCall.getArguments();
+                
+                // 手动执行工具
+                Object result = executeTool(toolName, args);
+                
+                // 把结果返回给模型
+                response = chatClient.prompt()
+                    .toolResult(toolCall.getId(), result)
+                    .call()
+                    .chatResponse();
+            }
+        }
+        
+        return response.getContent();
+    }
+
+    /**
+     * 5. 工具执行失败的处理
+     */
+    public String chatWithErrorHandling(String userMessage) {
+        try {
+            return chat(userMessage);
+        } catch (ToolExecutionException e) {
+            // 工具执行失败，把错误信息返回给模型
+            return chatClient.prompt()
+                .user(userMessage)
+                .toolError(e.getToolCallId(), e.getMessage())
+                .call()
+                .content();
+            // 模型会说："查询失败，请稍后重试"
+        }
+    }
+}
+```
+
+> 💡 **生产建议**：
+> - 工具描述要写"触发条件"而非"是什么"
+> - 危险操作（发邮件、删除）必须加人工确认
+> - 工具执行失败要把错误信息返回给模型，让它友好提示
+
+---
+
 ## 七、工具调用的安全设计（生产必备）
 
 ```
@@ -440,4 +676,8 @@ MCP（Model Context Protocol，第 23 课详解）：
 
 ---
 
-**下一课**：[09-AI Agent 智能体](./09-AIAgent智能体.md) —— 让 AI 自主规划、决策、执行
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 07 课：RAG 检索增强生成（下）](07-RAG检索增强生成下.md) | [第 09 课：AI Agent 智能体](09-AIAgent智能体.md) |

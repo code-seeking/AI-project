@@ -174,7 +174,300 @@ Agent 状态：
 
 ---
 
-## 五、多 Agent 的冲突与协调
+## 五点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 体验多 Agent 协作
+
+```
+🧑 用户提问（ChatGPT，Multi-Agent模式）：
+评估候选人张三，并推荐合适岗位
+
+🤖 Multi-Agent 执行过程：
+
+[Supervisor Agent]
+Thought: 这个任务需要拆解
+Plan:
+1. 让简历分析Agent评估张三
+2. 让岗位匹配Agent推荐岗位
+3. 汇总结果
+
+[分配任务1]
+→ ResumeAnalyzer Agent
+
+[ResumeAnalyzer Agent]
+Thought: 需要查看张三的简历
+Action: getResume(candidateId=123)
+Observation: 简历内容...
+Thought: 分析简历
+Final: 张三，5年Java，技术能力强，沟通良好
+
+[Supervisor Agent]
+Thought: 简历分析完成，现在让岗位匹配Agent推荐
+→ PositionMatcher Agent
+
+[PositionMatcher Agent]
+Thought: 根据张三的技能匹配岗位
+Action: searchPositions(skills=["Java", "Spring"])
+Observation: 返回5个岗位
+Thought: 评估匹配度
+Final: 推荐岗位1：Java后端开发（匹配度92%）
+
+[Supervisor Agent]
+Thought: 所有任务完成，汇总结果
+Final Answer: 
+候选人张三评估完成：
+- 技术能力：★★★★☆
+- 推荐岗位：Java后端开发（匹配度92%）
+
+📝 解读：多Agent协作让每个Agent专注于一件事，
+   Supervisor负责协调，Worker负责执行，分工明确。
+```
+
+### 体验 2：用 Claude 体验辩论/评审模式
+
+```
+🧑 用户提问（Claude，Critic模式）：
+请生成一份Java后端开发岗位的面试评估报告
+
+🤖 Multi-Agent 执行过程：
+
+[Generator Agent]
+Thought: 生成初步评估报告
+Draft: "候选人张三表现良好，建议通过"
+
+[Critic Agent]
+Thought: 审查报告
+Feedback: 
+- 报告太简短，缺少具体证据
+- 没有评估技术细节
+- 没有评估沟通能力
+- 建议增加具体例子
+
+[Generator Agent]
+Thought: 根据反馈修改
+Draft2: 
+"候选人张三在技术面试中表现出色：
+1. Java基础扎实：能准确回答HashMap原理、并发编程
+2. 项目经验丰富：有微服务架构设计经验
+3. 沟通良好：能清晰表达技术观点
+建议：通过，推荐录用"
+
+[Critic Agent]
+Thought: 再次审查
+Feedback: 报告质量良好，可以通过
+
+[最终输出]
+评估报告：...
+
+📝 解读：辩论/评审模式让两个Agent互相审查，
+   类似代码Review，能显著提升输出质量。
+```
+
+### 体验 3：用ChatGPT理解多Agent的成本问题
+
+```
+🧑 用户提问：
+多Agent协作的成本是不是很高？
+
+🤖 ChatGPT 回答：
+多Agent的成本确实是主要挑战：
+
+【成本构成】
+每个Agent每次循环 = 一次LLM调用 = token成本
+多Agent = 成本线性增长
+
+【实例计算】
+招聘筛选场景，3个Agent各3轮：
+
+单Agent成本：
+- 每轮输入：2000 token
+- 3轮：2000 × 6 = 1.2万 token（输入+输出）
+
+多Agent成本：
+- 3个Agent：1.2万 × 3 = 3.6万 token/候选人
+- 1000候选人：3600万 token
+- 成本：$0.03/1K × 36000 = $1080
+
+【优化策略】
+1. 能单Agent完成的不用多Agent（原则！）
+2. 简单子任务用便宜小模型
+3. Worker之间不传递长文本（只传结论）
+4. 复用工具结果（简历只解析一次）
+5. 批处理：同构任务合并
+
+【决策建议】
+第一版先用单Agent + 工具
+验证"确实是上下文/视角问题"后再拆多Agent
+多Agent是"最后手段"，不是"先进标志"
+
+📝 解读：多Agent的成本是单Agent的N倍，
+   必须精打细算，不要过度设计。
+```
+
+---
+
+## 五点六、Java 开发者视角：多 Agent 协作实现
+
+```java
+/**
+ * Java 中的多 Agent 协作实现
+ */
+@Service
+public class MultiAgentService {
+
+    @Autowired
+    private ChatModel chatModel;
+
+    /**
+     * 1. Supervisor-Worker 模式
+     */
+    public String supervisorWorkerPattern(String goal) {
+        // Supervisor Agent
+        String supervisorPrompt = """
+            你是Supervisor Agent，负责拆解任务并分配给Worker。
+            可用Worker：
+            - ResumeAnalyzer：分析简历
+            - PositionMatcher：匹配岗位
+            
+            目标：%s
+            
+            请拆解任务并分配。
+            """.formatted(goal);
+        
+        // Supervisor拆解任务
+        ChatResponse plan = chatModel.call(supervisorPrompt);
+        
+        // 解析任务分配
+        List<Task> tasks = parseTasks(plan.getContent());
+        
+        // 分配给Worker
+        Map<String, Object> results = new HashMap<>();
+        for (Task task : tasks) {
+            String workerResult = executeWorker(
+                task.getWorkerName(), 
+                task.getDescription()
+            );
+            results.put(task.getId(), workerResult);
+        }
+        
+        // Supervisor汇总结果
+        String summaryPrompt = """
+            所有Worker已完成任务，结果如下：
+            %s
+            
+            请汇总并生成最终报告。
+            """.formatted(results.toString());
+        
+        return chatModel.call(summaryPrompt).getContent();
+    }
+
+    /**
+     * 2. Worker Agent 执行
+     */
+    private String executeWorker(String workerName, String task) {
+        String systemPrompt = getWorkerSystemPrompt(workerName);
+        
+        return chatModel.call(
+            new Prompt(List.of(
+                new SystemMessage(systemPrompt),
+                new UserMessage(task)
+            ))
+        ).getContent();
+    }
+
+    /**
+     * 3. Worker 的 System Prompt
+     */
+    private String getWorkerSystemPrompt(String workerName) {
+        return switch (workerName) {
+            case "ResumeAnalyzer" -> """
+                你是简历分析Agent，专注于评估候选人的简历。
+                输出格式：
+                - 技术能力评分（0-100）
+                - 优势列表
+                - 风险点
+                """;
+            case "PositionMatcher" -> """
+                你是岗位匹配Agent，专注于匹配候选人与岗位。
+                输出格式：
+                - 推荐岗位列表
+                - 每个岗位的匹配度
+                """;
+            default -> "你是通用Worker Agent";
+        };
+    }
+
+    /**
+     * 4. Pipeline 模式
+     */
+    public String pipelinePattern(String input) {
+        // Agent A: 提取
+        String step1 = chatModel.call(
+            "从以下内容中提取关键信息：" + input
+        ).getContent();
+        
+        // Agent B: 分析
+        String step2 = chatModel.call(
+            "分析以下信息：" + step1
+        ).getContent();
+        
+        // Agent C: 生成报告
+        String step3 = chatModel.call(
+            "生成报告：" + step2
+        ).getContent();
+        
+        return step3;
+    }
+
+    /**
+     * 5. Critic 模式（辩论/评审）
+     */
+    public String criticPattern(String topic) {
+        String draft = "";
+        
+        for (int i = 0; i < 3; i++) {  // 最多3轮迭代
+            // Generator 生成
+            draft = chatModel.call(
+                new Prompt(List.of(
+                    new SystemMessage("你是内容生成Agent"),
+                    new UserMessage("生成关于" + topic + "的内容\n" +
+                                   (draft.isEmpty() ? "" : "参考之前的反馈：" + draft))
+                ))
+            ).getContent();
+            
+            // Critic 审查
+            String feedback = chatModel.call(
+                new Prompt(List.of(
+                    new SystemMessage("你是评审Agent，负责审查内容质量"),
+                    new UserMessage("审查以下内容：" + draft + "\n" +
+                                   "如果不满意，给出改进建议。\n" +
+                                   "如果满意，回复"APPROVED"")
+                ))
+            ).getContent();
+            
+            // 检查是否通过
+            if (feedback.contains("APPROVED")) {
+                return draft;  // 通过
+            }
+            
+            // 未通过，继续迭代
+            draft = feedback;
+        }
+        
+        return draft;  // 返回最终版本
+    }
+}
+```
+
+> 💡 **生产建议**：
+> - 先用单Agent + 工具，不够再拆多Agent
+> - Worker之间只传结论，不传长文本
+> - Supervisor用强模型，Worker用便宜模型
+> - 设置最大迭代次数，防止死循环
+
+---
+
+## 六、多 Agent 的冲突与协调
 
 ```
 冲突场景 1：资源竞争
@@ -448,4 +741,8 @@ Agent 状态：
 
 ---
 
-**下一课**：[11-AI 工作流引擎](./11-AI工作流引擎.md) —— 用可视化方式编排 AI 任务链
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 09 课：AI Agent 智能体](09-AIAgent智能体.md) | [第 11 课：AI 工作流引擎](11-AI工作流引擎.md) |
