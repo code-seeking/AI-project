@@ -314,3 +314,11 @@ Agent Card          →   服务元数据 / Swagger 文档
 - ANP 提案：https://github.com/anthropics/agent-protocols
 - Spring AI MCP：https://docs.spring.io/spring-ai/reference/api/mcp.html
 - Google A2A 博客：https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 30 课：上下文工程](30-上下文工程.md) | [第 32 课：Agentic-RL 训练实战](32-Agentic-RL训练实战.md) |

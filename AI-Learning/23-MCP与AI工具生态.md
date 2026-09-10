@@ -93,6 +93,25 @@ MCP：模型与"任意系统"的标准化接口（跨应用通用）
 
 ## 四、MCP Server 开发实战
 
+```
+┌──────────────────────────────────────────────────────────┐
+│           MCP Server 开发流程                              │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  1. 定义工具 ─→ @Tool 注解标记方法                      │
+│       │                                                │
+│  2. 配置服务 ─→ application.yml 启用 MCP Server       │
+│       │                                                │
+│  3. 选择传输 ─→ stdio(本地) / SSE(网络)              │
+│       │                                                │
+│  4. 启动服务 ─→ 独立进程 / 嵌入应用                    │
+│       │                                                │
+│  5. 客户端配置 ─→ Host 添加 MCP Server 连接          │
+│       │                                                │
+│  6. 测试验证 ─→ 工具发现 + 调用测试                    │
+└──────────────────────────────────────────────────────────┘
+```
+
 ### 4.1 开发一个 HR 数据库 MCP Server
 
 ```java
@@ -175,7 +194,59 @@ spring:
 
 ---
 
-## 六、MCP 生态现状（2026）
+## 七、用 AI 工具实际体验
+
+### 7.1 用 ChatGPT 生成 MCP Server 代码
+
+```
+🧑 提问（ChatGPT-4o）：
+"请帮我用 Java + Spring AI 写一个完整的 MCP Server，
+ 暴露以下工具：
+ 1. searchCandidate(name) - 根据姓名查询候选人
+ 2. listCandidatesByPosition(positionId) - 查询岗位下的候选人
+ 3. getAnalysisReport(candidateId) - 获取分析报告
+ 4. updateCandidateStatus(candidateId, status) - 更新状态
+ 包含完整的配置和客户端接入示例。"
+
+🤖 ChatGPT 生成了：
+- 完整的 HrMcpServerConfig 类（@Tool 注解）
+- application.yml 配置（stdio/SSE 两种模式）
+- 客户端 mcpServers.json 配置
+- 测试代码（工具发现 + 调用示例）
+- 安全配置（API Key 认证）
+
+💡 启发：
+  MCP Server 的开发和 Function Calling 工具定义非常相似，
+  主要区别在于协议标准化和跨应用复用。
+  如果已经有 Spring AI 的 @Tool 注解，迁移成本几乎为零。
+```
+
+### 7.2 用 Claude 设计 MCP 安全策略
+
+```
+🧑 提问（Claude 3.7）：
+"我要把 HR 系统的核心能力封装成 MCP Server，
+ 供公司内部的 AI 助手调用。请帮我设计安全策略：
+ 1. 哪些工具应该暴露？哪些不应该？
+ 2. 权限控制怎么做？
+ 3. 数据流安全怎么保障？
+ 4. 审计怎么做？"
+
+🤖 Claude 安全方案：
+- 暴露工具：查询类（search/list/get）✅，修改类（update/delete）⚠️ 需审批
+- 不暴露：系统管理类（用户管理/角色配置/系统设置）❌
+- 权限控制：每个 MCP 调用带调用方身份，服务端校验权限
+- 数据安全：敏感字段（手机号/身份证）自动脱敏后返回
+- 审计：每次调用记录工具名/参数/调用方/结果摘要
+
+💡 启发：
+  MCP 安全设计的核心原则：最小暴露 + 读易写难。
+  查询类工具可以开放，修改类工具必须加权限和审批。
+```
+
+---
+
+## 八、MCP 生态现状（2026）
 
 ```
 已支持 MCP 的平台：
@@ -197,7 +268,7 @@ spring:
 
 ---
 
-## 七、MCP 的安全考量
+## 九、MCP 的安全考量
 
 ```
 1. 权限控制：MCP Server 暴露的工具 = 攻击面
@@ -219,7 +290,7 @@ spring:
 
 ---
 
-## 八、未来趋势：Agent 与 MCP 的融合
+## 十、未来趋势：Agent 与 MCP 的融合
 
 ```
 趋势 1：MCP 成为 AI 应用的"USB-C"
@@ -245,7 +316,7 @@ spring:
 
 ---
 
-## 九、本课小结
+## 十一、本课小结
 
 ```
 核心要点：
@@ -260,16 +331,17 @@ spring:
 
 ---
 
-## 十、思考题
+## 十二、思考题
 
 1. **你们 HR 系统哪些能力适合封装成 MCP Server？画出工具清单。**
 2. **MCP 和 Function Calling 的区别是什么？什么时候用哪个？**
 3. **如果第三方 MCP Server 有恶意工具，AI 应用怎么防？**
 4. **MCP 的"工具发现"机制对 Agent 意味着什么？**
+5. **设计一个 MCP Server 的版本管理方案，保证向后兼容性。**
 
 ---
 
-## 十一、实战练习
+## 十三、实战练习
 
 1. 查看你 IDE 里已接入的 MCP Server（chrome-devtools 等），理解它们如何工作
 2. 用 Spring AI 写一个"候选人查询" MCP Server（@Tool 注解）
@@ -278,8 +350,16 @@ spring:
 
 ---
 
-## 十二、延伸阅读
+## 十四、延伸阅读
 
 - MCP 官方文档：https://modelcontextprotocol.io/
 - MCP 规范（GitHub）：https://github.com/modelcontextprotocol/modelcontextprotocol
 - Spring AI MCP 文档：https://docs.spring.io/spring-ai/reference/api/mcp.html
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 22 课：AI 测试与评估体系](22-AI测试与评估体系.md) | [第 24 课：端到端案例——AI 招聘系统架构全解](24-端到端企业案例AI招聘系统.md) |

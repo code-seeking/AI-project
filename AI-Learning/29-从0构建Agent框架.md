@@ -391,3 +391,11 @@ Java 劣势：
 - LangChain4j 文档：https://docs.langchain4j.dev/
 - Spring AI 工具抽象：https://docs.spring.io/spring-ai/reference/api/tools.html
 - Anthropic Building Effective Agents：https://www.anthropic.com/research/building-effective-agents
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 28 课：主流 Agent 框架实践](28-主流Agent框架实践.md) | [第 30 课：上下文工程](30-上下文工程.md) |

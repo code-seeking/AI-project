@@ -329,3 +329,11 @@ Reflection 适用：
 - Plan-and-Solve 论文：https://arxiv.org/abs/2305.04091
 - Reflexion 论文：https://arxiv.org/abs/2303.11366
 - Anthropic Building Effective Agents：https://www.anthropic.com/research/building-effective-agents
+
+---
+
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 25 课：智能体发展史](25-智能体发展史.md) | [第 27 课：低代码平台 Agent 搭建](27-低代码平台Agent搭建.md) |

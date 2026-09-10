@@ -185,6 +185,212 @@ public double cosineSimilarity(float[] a, float[] b) {
 
 ---
 
+## 五点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 理解 Embedding 的语义匹配能力
+
+```
+🧑 用户提问：
+请解释为什么"精通Spring Boot"和"熟悉Spring框架"的Embedding向量会相近，
+即使它们没有共同的关键词？
+
+🤖 ChatGPT 回答：
+这是Embedding的"语义匹配"能力的典型体现：
+
+1. 训练数据中的共现关系：
+   在海量文本中，"Spring Boot"和"Spring框架"经常出现在相似的上下文中
+   例如：
+   - "熟悉Spring Boot开发" vs "精通Spring框架"
+   - 都出现在"Java后端开发"、"微服务"等语境中
+
+2. 上下文决定语义：
+   Embedding模型学到的是"词的上下文分布"
+   两个词如果在相似的上下文中出现，它们的向量就会相近
+   这就是"分布假说"（Distributional Hypothesis）
+
+3. 语义空间的几何结构：
+   "Spring Boot" → 向量A
+   "Spring框架" → 向量B
+   余弦相似度(A, B) ≈ 0.85（高度相关）
+
+4. 与传统关键词匹配的区别：
+   传统方法："Spring Boot" ≠ "Spring框架"（字面不同）
+   Embedding：语义相近 → 向量相近 → 能匹配上
+
+📝 解读：这就是为什么你的HR系统中，
+   即使简历写"Spring Boot"，职位写"Spring框架"，
+   Embedding也能正确匹配，而关键词匹配会失败。
+```
+
+### 体验 2：用 Claude 体验不同Embedding模型的差异
+
+```
+🧑 用户提问（Claude）：
+请对比以下三种Embedding模型的特点和适用场景：
+1. text-embedding-ada-002（OpenAI）
+2. BGE-M3（智源）
+3. all-MiniLM-L6-v2（轻量级）
+
+🤖 Claude 回答：
+三种模型的对比：
+
+【text-embedding-ada-002】
+- 维度：1536
+- 特点：通用性强，英文表现优秀
+- 成本：$0.0001 / 1K tokens（便宜）
+- 适用：英文为主的多语言场景
+- 局限：中文表现不如专门的中文模型
+
+【BGE-M3】⭐
+- 维度：1024
+- 特点：中文优化，支持多语言，支持8K长文本
+- 成本：本地部署免费（开源）
+- 适用：中文RAG、简历分析、知识库问答
+- 优势：中文语义理解更准确
+
+【all-MiniLM-L6-v2】
+- 维度：384
+- 特点：轻量、快速、资源占用小
+- 成本：本地部署免费
+- 适用：原型开发、资源受限场景
+- 局限：维度低，表达力有限
+
+推荐选择：
+- 中文HR系统 → BGE-M3（你的项目选择正确！）
+- 英文为主 → text-embedding-ada-002
+- 快速原型 → all-MiniLM-L6-v2
+
+📝 解读：你的项目用Ollama + BGE-M3是正确选择，
+   中文简历场景下比OpenAI模型更准确。
+```
+
+### 体验 3：用ChatGPT理解余弦相似度的阈值设定
+
+```
+🧑 用户提问：
+在HR系统中，用Embedding做人岗匹配，余弦相似度阈值应该设多少？
+
+🤖 ChatGPT 回答：
+阈值设定需要基于实际数据校准，不要直接用网上的经验值。
+
+建议的校准流程：
+
+1. 构建测试集：
+   - 收集50-100对"候选人-职位"样本
+   - 人工标注：匹配/不匹配
+
+2. 计算相似度分布：
+   - 对所有样本计算余弦相似度
+   - 画出分布直方图
+
+3. 观察分布特征：
+   - 匹配的样本：相似度通常在 0.7-0.9
+   - 不匹配的样本：相似度通常在 0.3-0.6
+   - 找到分界点
+
+4. 设定阈值：
+   - 保守（高召回）：0.65（宁可错杀，不可放过）
+   - 平衡：0.75（推荐起点）
+   - 严格（高精确）：0.85（宁缺毋滥）
+
+5. 验证效果：
+   - 用测试集验证不同阈值的准确率、召回率
+   - 选择业务可接受的平衡点
+
+常见错误：
+❌ 直接用0.7（可能不适合你的数据）
+❌ 阈值太高（如0.9，导致很多匹配被漏掉）
+❌ 阈值太低（如0.5，导致很多不相关的被匹配上）
+
+📝 解读：这就是为什么第05课强调"阈值需要用自己的数据校准"，
+   不要拍脑袋决定，要用数据说话。
+```
+
+---
+
+## 五点六、Java 开发者视角：Embedding 实战代码
+
+```java
+/**
+ * Java 中的 Embedding 实战（Spring AI + Ollama）
+ */
+@Service
+public class EmbeddingService {
+
+    @Autowired
+    private EmbeddingModel embeddingModel;
+
+    /**
+     * 1. 文本向量化
+     */
+    public float[] embedText(String text) {
+        // Spring AI 的 EmbeddingModel 接口
+        EmbeddingResponse response = embeddingModel.call(
+            new EmbeddingRequest(List.of(text), "bge-m3")
+        );
+        return response.getResult().getOutput();
+    }
+
+    /**
+     * 2. 计算两个文本的相似度
+     */
+    public double calculateSimilarity(String text1, String text2) {
+        float[] vector1 = embedText(text1);
+        float[] vector2 = embedText(text2);
+        return cosineSimilarity(vector1, vector2);
+    }
+
+    /**
+     * 3. 余弦相似度计算（Java实现）
+     */
+    private double cosineSimilarity(float[] a, float[] b) {
+        double dotProduct = 0, normA = 0, normB = 0;
+        for (int i = 0; i < a.length; i++) {
+            dotProduct += a[i] * b[i];
+            normA += a[i] * a[i];
+            normB += b[i] * b[i];
+        }
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    /**
+     * 4. 人岗匹配示例
+     */
+    public MatchResult matchCandidateToPosition(
+            String resumeText, 
+            String jobDescription) {
+        
+        float[] resumeVector = embedText(resumeText);
+        float[] jobVector = embedText(jobDescription);
+        double similarity = cosineSimilarity(resumeVector, jobVector);
+        
+        return new MatchResult(
+            similarity,
+            similarity > 0.75 ? "MATCH" : "NO_MATCH",
+            "匹配度: " + String.format("%.2f", similarity * 100) + "%"
+        );
+    }
+
+    /**
+     * 5. 批量Embedding（优化性能）
+     */
+    public List<float[]> batchEmbed(List<String> texts) {
+        // 批量调用，减少网络往返
+        EmbeddingResponse response = embeddingModel.call(
+            new EmbeddingRequest(texts, "bge-m3")
+        );
+        return response.getResults().stream()
+            .map(r -> r.getOutput())
+            .collect(Collectors.toList());
+    }
+}
+```
+
+> 💡 **性能提示**：批量Embedding比逐个调用快10倍以上，
+> 生产环境一定要用批量接口，减少网络开销。
+
+---
+
 ## 六、Embedding vs LLM 生成——两者关系
 
 ```
@@ -422,4 +628,8 @@ InfoNCE 损失：
 
 ---
 
-**下一课**：[05-向量数据库](./05-向量数据库.md) —— 怎么在百万数据中快速找到"语义相似"的内容？
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 03 课：Prompt Engineering 提示工程](03-PromptEngineering提示工程.md) | [第 05 课：向量数据库](05-向量数据库.md) |

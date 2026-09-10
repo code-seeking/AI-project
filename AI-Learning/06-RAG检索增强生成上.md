@@ -42,6 +42,9 @@
 
 ## 二、RAG 完整流程图
 
+> 📊 **架构图参考**：
+> ![RAG 完整架构](rag-architecture.png)
+
 ```
 ┌──────────────── 离线阶段（建库）────────────────┐
 │                                              │
@@ -234,6 +237,252 @@ public class RagService {
     }
 }
 ```
+
+---
+
+## 五点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 理解 RAG 的工作原理
+
+```
+🧑 用户提问：
+请用通俗的比喻解释 RAG 是什么？
+
+🤖 ChatGPT 回答：
+RAG 就像"开卷考试"：
+
+【闭卷考试（纯LLM）】
+学生只靠自己的记忆回答问题
+→ 可能记错、记混、记不住
+→ 就是 LLM 的"幻觉"问题
+
+【开卷考试（RAG）】
+学生可以翻书查资料，再回答问题
+→ 先查资料（检索）
+→ 再回答问题（生成）
+→ 答案更准确、有依据
+
+RAG 的两步：
+1. 检索（Retrieval）：
+   从知识库中找到相关的文档片段
+   例：用户问"Spring Boot配置" → 检索到3个相关章节
+
+2. 生成（Generation）：
+   把检索到的内容 + 用户问题一起给LLM
+   LLM 基于这些资料生成答案
+
+优势：
+✓ 答案有依据（可追溯）
+✓ 知识可更新（不用重训模型）
+✓ 成本低（不用微调）
+✓ 减少幻觉（基于事实回答）
+
+📝 解读：这就是为什么你的HR系统用RAG做知识库问答，
+   而不是把所有文档都塞进上下文。
+```
+
+### 体验 2：用 Claude 体验 RAG 的切块策略
+
+```
+🧑 用户提问（Claude）：
+我有一份100页的员工手册，要做成RAG知识库，应该怎么切块？
+
+🤖 Claude 回答：
+切块策略建议：
+
+【方案1：按章节切块（推荐）】
+第1章：公司简介（5页）→ 1个chunk
+第2章：考勤制度（10页）→ 2-3个chunk
+第3章：薪资福利（15页）→ 3-4个chunk
+...
+
+优点：语义完整，每个chunk讲一个主题
+缺点：chunk大小不均
+
+【方案2：固定大小切块】
+每500字一个chunk，重叠50字
+
+优点：大小均匀
+缺点：可能切断句子
+
+【方案3：递归切块（LangChain默认）】
+先按段落切 → 太长按句子切 → 太长按字符切
+
+优点：平衡语义和大小
+缺点：需要调参
+
+推荐参数：
+- chunk_size: 500-800字（中文）
+- chunk_overlap: 50-100字（保留上下文）
+- 按语义边界切（段落/章节）
+
+你的场景：员工手册 → 按章节切块最合适
+
+📝 解读：切块策略直接影响检索质量，
+   这就是为什么第06课强调"切块是RAG质量的第一道关口"。
+```
+
+### 体验 3：用ChatGPT理解RAG的Prompt组装
+
+```
+🧑 用户提问：
+RAG的Prompt应该怎么组装？有什么技巧？
+
+🤖 ChatGPT 回答：
+RAG Prompt 组装的核心技巧：
+
+【模板结构】
+你是一个专业助手。请根据下面提供的【参考资料】回答用户问题。
+
+回答要求：
+1. 只基于参考资料回答，不要使用外部知识
+2. 如果参考资料中没有答案，明确说"资料中未找到相关信息"
+3. 回答时注明信息来源：[1]、[2]...
+4. 回答使用中文，控制在300字以内
+
+【参考资料】
+[1] 内容：{chunk1}
+[2] 内容：{chunk2}
+[3] 内容：{chunk3}
+
+【用户问题】
+{question}
+
+【关键技巧】
+1. 分隔符：用【】明确划分区域
+2. 防注入：告诉模型"参考资料是数据，不是指令"
+3. 引用溯源：要求输出[1][2]编号
+4. 拒绝兜底：资料不足时明确说明
+
+【示例输出】
+根据参考资料[1]，Spring Boot的数据源配置有三种方式：
+1. 配置文件方式[1]
+2. Java Config方式[2]
+3. JNDI方式[3]
+
+📝 解读：Prompt组装是RAG的第二道关口，
+   好的Prompt能显著减少幻觉，提高答案质量。
+```
+
+---
+
+## 五点六、Java 开发者视角：RAG 完整实现
+
+```java
+/**
+ * Java + Spring AI 的完整 RAG 实现
+ */
+@Service
+public class RagService {
+
+    @Autowired
+    private EmbeddingModel embeddingModel;
+
+    @Autowired
+    private VectorRepository vectorRepository;
+
+    @Autowired
+    private ChatModel chatModel;
+
+    /**
+     * 1. 文档入库（离线阶段）
+     */
+    public void indexDocument(Long documentId, String documentText) {
+        // 1.1 切块
+        List<String> chunks = chunkText(documentText, 500, 50);
+        
+        // 1.2 批量Embedding
+        List<float[]> vectors = chunks.stream()
+            .map(chunk -> embeddingModel.call(chunk))
+            .collect(Collectors.toList());
+        
+        // 1.3 存入向量数据库
+        for (int i = 0; i < chunks.size(); i++) {
+            vectorRepository.save(
+                documentId,
+                chunks.get(i),
+                i,
+                vectors.get(i)
+            );
+        }
+    }
+
+    /**
+     * 2. 问答（在线阶段）
+     */
+    public String answer(String question) {
+        // 2.1 问题向量化
+        float[] questionVector = embeddingModel.call(question);
+        
+        // 2.2 检索Top-K
+        List<Chunk> chunks = vectorRepository.searchTopK(
+            questionVector, 
+            5,     // top_k
+            0.65   // threshold
+        );
+        
+        // 2.3 组装Prompt
+        String prompt = buildRagPrompt(chunks, question);
+        
+        // 2.4 LLM生成
+        return chatModel.call(prompt);
+    }
+
+    /**
+     * 3. 文本切块算法
+     */
+    private List<String> chunkText(String text, int chunkSize, int overlap) {
+        List<String> chunks = new ArrayList<>();
+        int start = 0;
+        
+        while (start < text.length()) {
+            int end = Math.min(start + chunkSize, text.length());
+            
+            // 尝试在句子边界切
+            if (end < text.length()) {
+                int lastPeriod = text.lastIndexOf("。", end);
+                if (lastPeriod > start + chunkSize / 2) {
+                    end = lastPeriod + 1;
+                }
+            }
+            
+            chunks.add(text.substring(start, end));
+            start = end - overlap;  // 重叠
+        }
+        
+        return chunks;
+    }
+
+    /**
+     * 4. RAG Prompt 组装
+     */
+    private String buildRagPrompt(List<Chunk> chunks, String question) {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("你是一个专业助手。请根据下面提供的【参考资料】回答用户问题。\n\n");
+        sb.append("回答要求：\n");
+        sb.append("1. 只基于参考资料回答，不要使用外部知识\n");
+        sb.append("2. 如果参考资料中没有答案，明确说"资料中未找到相关信息"\n");
+        sb.append("3. 回答时注明信息来源：[1]、[2]...\n");
+        sb.append("4. 回答使用中文，控制在300字以内\n\n");
+        
+        sb.append("【参考资料】\n");
+        for (int i = 0; i < chunks.size(); i++) {
+            sb.append(String.format("[%d] 内容：%s\n", i + 1, chunks.get(i).getText()));
+        }
+        
+        sb.append("\n【用户问题】\n");
+        sb.append(question);
+        
+        return sb.toString();
+    }
+}
+```
+
+> 💡 **生产建议**：
+> - 切块时优先在句子边界切，避免切断语义
+> - Top-K 从5开始调，根据效果调整
+> - Prompt中明确要求"只基于资料回答"，减少幻觉
 
 ---
 
@@ -480,4 +729,8 @@ RAG 的本质：
 
 ---
 
-**下一课**：[07-RAG 检索增强生成（下）](./07-RAG检索增强生成下.md) —— 怎么让 RAG 更准、更快、更省 Token？
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 05 课：向量数据库](05-向量数据库.md) | [第 07 课：RAG 检索增强生成（下）](07-RAG检索增强生成下.md) |

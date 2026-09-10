@@ -8,6 +8,9 @@
 
 ## 一、RAG 的进阶架构全景
 
+> 📊 **架构图参考**：
+> ![RAG 进阶架构](rag-architecture.png)
+
 ```
 基础 RAG（第 06 课）
     ↓ 优化方向
@@ -299,6 +302,263 @@ RAGAS 开源框架：
 
 ---
 
+## 五点五、用 AI 工具实际体验
+
+### 体验 1：用 ChatGPT 理解混合检索的优势
+
+```
+🧑 用户提问：
+请解释为什么混合检索（向量+关键词）比纯向量检索更好？
+
+🤖 ChatGPT 回答：
+混合检索的优势在于"互补"：
+
+【纯向量检索的盲区】
+1. 精确匹配不敏感：
+   搜索"JDK 25" → 可能找到"Java Development Kit version 25"
+   但用户可能只想找含"JDK 25"原文的文档
+
+2. 专有名词/缩写不敏感：
+   搜索"RPA" → 向量可能不区分"RPA"和"RPA技术"
+   但关键词检索一找一个准
+
+【纯关键词检索的盲区】
+1. 同义词无法命中：
+   搜索"涨工资" → 文档写"薪资调整" → 零命中
+   字面不同，但语义相同
+
+2. 口语化表达无法命中：
+   搜索"怎么配置" → 文档写"配置方法" → 可能漏掉
+
+【混合检索 = 两路互补】
+向量路：抓"语义相近但字面不同"
+关键词路：抓"字面精确"（型号、人名、缩写）
+
+合并策略：RRF（Reciprocal Rank Fusion）
+score(d) = 1/(k+rank_向量) + 1/(k+rank_关键词)
+
+效果：
+✓ 召回率提升（两路都找到）
+✓ 精确度提升（两路都命中的最相关）
+
+📝 解读：这就是为什么第07课强调"混合检索是最重要的优化"，
+   两路互补能显著提升检索质量。
+```
+
+### 体验 2：用 Claude 理解重排序（Rerank）的原理
+
+```
+🧑 用户提问（Claude）：
+为什么向量检索后还要做Rerank？两者有什么区别？
+
+🤖 Claude 回答：
+Rerank 的本质是"粗排→精排"的两阶段检索：
+
+【第一阶段：向量检索（召回）】
+目标：快速找到"可能相关"的候选集
+方法：双编码器（Bi-Encoder）
+  - 查询单独编码 → 向量A
+  - 文档单独编码 → 向量B
+  - 相似度 = cos(A, B)
+速度：百万文档毫秒级
+代价：查询和文档"没看过对方"，交互不足
+
+【第二阶段：Rerank（精排）】
+目标：对候选集精细排序
+方法：交叉编码器（Cross-Encoder）
+  - 查询和文档"拼在一起"输入模型
+  - 例："[CLS] 查询文本 [SEP] 文档文本 [CLS]"
+  - 模型能看到两者完整交互
+速度：每对都要过模型，只能对Top-50/100用
+精度：理解深层语义关系，更准确
+
+【流程】
+向量检索 Top-100（快而全）
+  ↓
+Rerank 重排（慢而准）
+  ↓
+取 Top-5 进 Prompt
+
+【为什么有效】
+向量检索：全局语义相似（粗粒度）
+Rerank：针对具体问题判断相关性（细粒度）
+
+例：
+查询："Spring Boot如何配置数据源？"
+向量检索：找到100个含"Spring Boot"的chunk
+Rerank：判断哪些chunk真正回答了"如何配置"
+
+📝 解读：Rerank是"性价比最高"的优化，
+   多一次小模型调用，但准确率显著提升。
+```
+
+### 体验 3：用ChatGPT理解语义缓存的实现
+
+```
+🧑 用户提问：
+语义缓存是怎么工作的？怎么判断两个问题"相似"？
+
+🤖 ChatGPT 回答：
+语义缓存的实现流程：
+
+【步骤1：新问题Embedding】
+问题："Spring Boot怎么配置？"
+→ Embedding → 向量A
+
+【步骤2：检索缓存库】
+缓存库存储：
+{
+  "question_vector": 向量B,
+  "answer": "Spring Boot配置方式有三种...",
+  "created_at": "2026-01-01"
+}
+
+计算相似度：cos(A, B)
+
+【步骤3：判断是否命中】
+相似度 > 阈值（如0.92）→ 命中缓存
+相似度 < 阈值 → 正常RAG流程
+
+【阈值设定】
+0.95+：几乎只有"完全重复"才命中
+  "Spring Boot怎么配置？" vs "Spring Boot怎么配置？"
+  → 命中
+
+0.90：相似问法也能命中
+  "Spring Boot怎么配置？" vs "Spring Boot如何配置？"
+  → 命中
+
+0.85：更宽松
+  "Spring Boot怎么配置？" vs "Java配置方式"
+  → 可能命中（但可能误判）
+
+推荐：0.90-0.95
+
+【缓存失效】
+TTL：24小时过期
+知识更新时主动清缓存
+容量上限：LRU淘汰
+
+效果：
+节省30-70%的LLM调用成本
+重复问题直接返回，响应更快
+
+📝 解读：语义缓存是"省钱利器"，
+   但要小心阈值设太低导致"答旧题"。
+```
+
+---
+
+## 五点六、Java 开发者视角：混合检索 + Rerank 实现
+
+```java
+/**
+ * Java 中的混合检索 + Rerank 实现
+ */
+@Service
+public class AdvancedRagService {
+
+    @Autowired
+    private VectorRepository vectorRepository;
+
+    @Autowired
+    private FullTextSearchRepository fullTextRepository;
+
+    @Autowired
+    private RerankModel rerankModel;
+
+    @Autowired
+    private EmbeddingModel embeddingModel;
+
+    /**
+     * 1. 混合检索（向量 + 关键词）
+     */
+    public List<Chunk> hybridSearch(String query, int topK) {
+        // 1.1 向量检索
+        float[] queryVector = embeddingModel.call(query);
+        List<Chunk> vectorResults = vectorRepository.searchTopK(
+            queryVector, 
+            topK * 2,  // 多召回一些
+            0.6
+        );
+        
+        // 1.2 关键词检索（BM25/全文）
+        List<Chunk> keywordResults = fullTextRepository.search(
+            query, 
+            topK * 2
+        );
+        
+        // 1.3 RRF融合
+        Map<Long, Double> rrfScores = new HashMap<>();
+        int k = 60;  // 平滑常数
+        
+        // 向量路得分
+        for (int i = 0; i < vectorResults.size(); i++) {
+            long chunkId = vectorResults.get(i).getId();
+            rrfScores.merge(chunkId, 1.0 / (k + i + 1), Double::sum);
+        }
+        
+        // 关键词路得分
+        for (int i = 0; i < keywordResults.size(); i++) {
+            long chunkId = keywordResults.get(i).getId();
+            rrfScores.merge(chunkId, 1.0 / (k + i + 1), Double::sum);
+        }
+        
+        // 1.4 按RRF得分排序
+        List<Long> sortedIds = rrfScores.entrySet().stream()
+            .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
+            .limit(topK)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+        
+        return vectorRepository.findByIds(sortedIds);
+    }
+
+    /**
+     * 2. Rerank 重排序
+     */
+    public List<Chunk> rerank(String query, List<Chunk> candidates, int topK) {
+        // 对每个候选计算精细相关度
+        List<RerankResult> results = candidates.stream()
+            .map(chunk -> {
+                double score = rerankModel.rerank(query, chunk.getText());
+                return new RerankResult(chunk, score);
+            })
+            .sorted(Comparator.comparingDouble(RerankResult::getScore).reversed())
+            .limit(topK)
+            .collect(Collectors.toList());
+        
+        return results.stream()
+            .map(RerankResult::getChunk)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 3. 完整的 Advanced RAG 流程
+     */
+    public String answerWithAdvancedRag(String question) {
+        // 3.1 混合检索 Top-20
+        List<Chunk> candidates = hybridSearch(question, 20);
+        
+        // 3.2 Rerank 取 Top-5
+        List<Chunk> topChunks = rerank(question, candidates, 5);
+        
+        // 3.3 组装Prompt
+        String prompt = buildRagPrompt(topChunks, question);
+        
+        // 3.4 LLM生成
+        return chatModel.call(prompt);
+    }
+}
+```
+
+> 💡 **性能提示**：
+> - 混合检索比纯向量检索慢，但准确率高
+> - Rerank 模型用小模型（如 BGE-Reranker），成本低
+> - 先混合检索 Top-20，再 Rerank Top-5，是最佳实践
+
+---
+
 ## 六、本课小结
 
 ```
@@ -491,4 +751,8 @@ NDCG@K（归一化折损累积增益）：
 
 ---
 
-**下一课**：[08-Function Calling 与工具调用](./08-FunctionCalling与工具调用.md) —— 让 LLM 从"聊天"变成"干活"
+## 导航
+
+| 上一课 | 下一课 |
+| --- | --- |
+| [第 06 课：RAG 检索增强生成（上）](06-RAG检索增强生成上.md) | [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) |

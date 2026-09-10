@@ -13,7 +13,7 @@ const path = require('path');
 const puppeteer = require('D:/acme/pdf-gen/node_modules/puppeteer');
 
 const DIR = __dirname;
-const OUTPUT_PDF = path.join(DIR, 'AI应用开发学习路线.pdf');
+const OUTPUT_PDF = path.join(DIR, 'AI应用开发.pdf');
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 
 // ============ Markdown → HTML 转换器（覆盖课程使用的语法） ============
@@ -235,8 +235,8 @@ function mdToHtml(md) {
 </head>
 <body>
   <div class="cover">
-    <h1>AI 应用开发学习路线</h1>
-    <p>Java 开发者进阶指南 · 理论 + 实战</p>
+    <h1>AI 应用开发</h1>
+    <p>Java 开发者进阶指南 · 32 课系统学习路线</p>
     <p style="color:#9ca3af;font-size:10pt;">共 ${files.length} 个章节 · 由 Markdown 自动生成</p>
   </div>
   ${toc}
@@ -261,7 +261,7 @@ function mdToHtml(md) {
     printBackground: true,
     margin: { top: '18mm', bottom: '18mm', left: '14mm', right: '14mm' },
     displayHeaderFooter: true,
-    headerTemplate: '<div style="font-size:8px;color:#9ca3af;width:100%;text-align:center;padding-top:4mm;">AI 应用开发学习路线</div>',
+    headerTemplate: '<div style="font-size:8px;color:#9ca3af;width:100%;text-align:center;padding-top:4mm;">AI 应用开发</div>',
     footerTemplate: '<div style="font-size:8px;color:#9ca3af;width:100%;text-align:center;padding-bottom:4mm;">第 <span class="pageNumber"></span> 页 / 共 <span class="totalPages"></span> 页</div>',
     preferCSSPageSize: true,
   });
