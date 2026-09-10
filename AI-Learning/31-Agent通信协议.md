@@ -8,6 +8,8 @@
 
 ## 一、三大协议概览
 
+![Agent 三大通信协议对比](agent-protocol-comparison.png)
+
 ```
 1. MCP（Model Context Protocol）：Agent ↔ 工具
    解决：LLM 如何发现和调用外部工具

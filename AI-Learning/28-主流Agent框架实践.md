@@ -8,6 +8,8 @@
 
 ## 一、四大框架概览
 
+![四大 Agent 框架架构对比](agent-framework-comparison.png)
+
 ```
 1. AutoGen（微软）：多 Agent 对话协作
 2. AgentScope（阿里）：游戏化分布式 Agent
