@@ -8,6 +8,8 @@
 
 ## 一、三种经典 Agent 范式概览
 
+![Agent 三种经典范式对比](agent-paradigm-comparison.png)
+
 ```
 1. ReAct（Reasoning + Acting）
    思考-行动-观察循环，走一步看一步

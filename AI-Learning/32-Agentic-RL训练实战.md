@@ -317,7 +317,75 @@ Java 开发者的优势：
 
 ---
 
-## 八、本课小结
+## 八、用 AI 工具实际体验
+
+### 8.1 用 ChatGPT 体验 SFT 的效果差异
+
+```
+场景：让 ChatGPT 扮演 HR Agent，调用工具筛选候选人
+
+【未微调的通用模型（GPT-4o）】
+用户：帮我找适合"高级Java开发"的候选人
+
+GPT-4o 回复：
+  好的，我来帮你找。请问：
+  1. 工作地点在哪里？
+  2. 需要多少年经验？
+  3. 有什么特殊要求吗？
+  （问题：模型不知道有哪些工具可用，只能反问用户）
+
+【经过 SFT 微调的 HR Agent 模型】
+用户：帮我找适合"高级Java开发"的候选人
+
+微调模型回复：
+  [Thought] 用户需要筛选候选人，先获取岗位详情
+  [Action] get_position_detail(position_name="高级Java开发")
+  [Observation] 要求：5年+ Java，微服务经验，本科以上，上海
+  
+  [Thought] 按条件搜索候选人
+  [Action] search_candidates(skills=["Java","Spring Cloud"], min_exp=5, location="上海")
+  [Observation] 找到 3 位：张三(8年)、李四(6年)、王五(10年)
+  
+  [Thought] 逐一评估匹配度
+  [Action] evaluate_match(candidate="张三", position="高级Java开发")
+  [Observation] 匹配度 92%
+  
+  推荐张三(92%)、李四(87%)参加高级Java开发岗位面试。
+  （差异：微调后模型自动调用工具，不需要反问用户）
+```
+
+### 8.2 用 Hugging Face 体验微调模型
+
+```
+场景：在 Hugging Face 上对比不同模型的 Agent 能力
+
+步骤 1：访问 BFCL 排行榜
+  https://gorilla.cs.berkeley.edu/leaderboard.html
+  
+  观察：
+  - GPT-4o：工具调用准确率 85.3%
+  - Claude 3.5：工具调用准确率 88.1%
+  - Qwen2-72B：工具调用准确率 72.4%
+  - Qwen2-72B + SFT：工具调用准确率 81.6%（提升 9.2%）
+  - Qwen2-72B + SFT + GRPO：工具调用准确率 86.7%（再提升 5.1%）
+
+  结论：SFT 让模型学会工具调用格式，GRPO 让模型优化工具调用策略
+
+步骤 2：在 Hugging Face Playground 测试
+  https://huggingface.co/chat/
+  
+  选择模型：Qwen2-72B
+  输入：帮我查找上海的高级Java候选人，要求 5 年以上经验
+  
+  观察输出：
+  - 基础模型：可能只返回文本建议，不会调用工具
+  - SFT 模型：会输出工具调用格式，但可能选错工具
+  - GRPO 模型：选对工具、参数准确、步骤精简
+```
+
+---
+
+## 九、本课小结
 
 ```
 核心要点：
@@ -331,7 +399,7 @@ Java 开发者的优势：
 
 ---
 
-## 九、思考题
+## 十、思考题
 
 1. **你的 HR 项目中，哪些数据可以转化为 Agent 训练数据？**
 2. **SFT 和 GRPO 分别解决什么问题？能否只做 SFT 不做 GRPO？**
@@ -340,7 +408,7 @@ Java 开发者的优势：
 
 ---
 
-## 十、延伸阅读
+## 十一、延伸阅读
 
 - DeepSeek-R1 论文：https://arxiv.org/abs/2501.12948
 - LoRA 论文：https://arxiv.org/abs/2106.09685
