@@ -55,11 +55,26 @@ Transformer 是数学模型，只接受**数字**作为输入。
 
 **好处**：词汇表可控（3-10 万），能处理任何语言，包括没见过的词。
 
+### 分词方法对比
+
+| 分词方法 | 粒度 | 词汇表大小 | 中文适配 | 代表模型 |
+|---------|------|-----------|---------|----------|
+| 词级分词 | 词 | 数十万（爆炸） | 差（分词难） | 早期 NLP |
+| 字符级分词 | 字 | 极小（几千） | 较好 | 部分中文模型 |
+| 子词分词（BPE） | 子词 | 3-10万（可控） | 好 | GPT/LLaMA |
+| SentencePiece | 子词/字节 | 3-10万 | 最优（字节级） | Ollama/T5 |
+
 ---
 
 ## 三、主流 Tokenizer 算法
 
 ### 3.1 BPE（Byte Pair Encoding）—— GPT 系列使用
+
+### BPE（Byte Pair Encoding）
+
+> **严谨定义**：BPE 是一种数据驱动的子词分词算法，通过统计语料中相邻 token 对的出现频率，迭代合并最高频的相邻对，构建从字符到子词的层级词汇表。其时间复杂度为 O(n·|V|·log|V|)，其中 n 为语料长度，|V| 为词汇表大小。GPT 系列模型采用基于 UTF-8 字节的 BPE 变体（tiktoken）。
+
+> **通俗理解**：就像拼乐高——最开始你有一堆单个积木块（字母），发现某两块经常拼在一起就把它俩粘成一个新模块（子词），反复操作后你就有了一套从小组件到大模块的积木库。遇到新词也不怕，拆成已知模块就行。
 
 **算法思想**：从字符开始，反复合并最高频的相邻对。
 
@@ -121,7 +136,13 @@ LLM API 计费：输入 $X / 1000 tokens，输出 $Y / 1000 tokens
 
 ## 五、Special Tokens（特殊标记）
 
-Tokenizer 还要添加**特殊标记**来标识结构：
+### Special Tokens（特殊标记）
+
+> **严谨定义**：Special Tokens 是 Tokenizer 词汇表中的保留标识符，不承载语义信息，而是为模型提供结构化信号。常见类型包括 BOS（序列起始）、EOS（序列终止）、PAD（批量对齐填充）、UNK（未登录词）以及 Chat Template 中的角色分隔符。这些 token 在 Embedding 层有对应的可学习向量，参与 Transformer 的注意力计算。
+
+> **通俗理解**：就像一本书的排版标记——「第一章」告诉你新章节开始了（BOS），「全书完」告诉你故事结束了（EOS），空白页用来对齐左右页（PAD）。这些标记不影响故事内容，但帮读者（模型）理解文本结构。
+
+Tokenizer 还要添加**特殊的标记**来标识结构：
 
 ```
 BOS  (Beginning of Sequence)  → 序列开始
@@ -149,7 +170,7 @@ Assistant: "好的，我来分析..."
 
 ---
 
-## 五点五、用 AI 工具实际体验
+## 六、用 AI 工具实际体验
 
 ### 体验 1：用 OpenAI Tokenizer 工具可视化分词
 
@@ -244,7 +265,7 @@ Token 数量影响 AI 成本的三个原因：
 
 ---
 
-## 五点六、Java 开发者视角：用代码统计 Token
+## 七、Java 开发者视角：用代码统计 Token
 
 ```java
 /**
@@ -296,7 +317,7 @@ public class TokenCounter {
 
 ---
 
-## 六、与你项目的关联
+## 八、与你项目的关联
 
 ### 6.1 为什么你的 Ollama Embedding 需要统一分词？
 
@@ -322,7 +343,7 @@ public class TokenCounter {
 
 ---
 
-## 七、本课小结
+## 九、本课小结
 
 ```
 核心要点：
@@ -335,7 +356,7 @@ public class TokenCounter {
 
 ---
 
-## 八、思考题
+## 十、思考题
 
 1. **为什么说"中文比英文更费 token"？这对中文 AI 应用的成本有什么影响？**
 2. **如果要优化简历分析的 token 消耗，你会从哪些方面入手？**（提示：输入侧 vs 输出侧）
@@ -344,7 +365,7 @@ public class TokenCounter {
 
 ---
 
-## 九、深度原理：BPE 完整算法与 Tokenizer 实战
+## 十一、深度原理：BPE 完整算法与 Tokenizer 实战
 
 ### 9.1 BPE 训练算法的完整步骤
 
@@ -483,7 +504,7 @@ curl http://localhost:11434/api/embed -d '{"model":"bge-m3","input":"候选人�
 
 ---
 
-## 十、延伸阅读
+## 十二、延伸阅读
 
 - OpenAI Tokenizer 可视化工具：https://platform.openai.com/tokenizer
 - BPE 原论文：《Neural Machine Translation of Rare Words with Subword Units》

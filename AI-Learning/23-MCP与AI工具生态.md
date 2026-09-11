@@ -11,28 +11,44 @@
 **MCP（Model Context Protocol，模型上下文协议）**
 由 Anthropic 于 2024 年提出的**开放标准协议**，用于 LLM 与外部工具/数据源的标准化连接。
 
-```
-类比：USB 接口
-  以前：每个设备有专属接口（每个 AI 应用对接每个系统都要定制）
-  MCP：统一接口标准（一次开发，处处连接）
-```
+> **类比：USB 接口**
+>
+> 以前：每个设备有专属接口（每个 AI 应用对接每个系统都要定制）
+> MCP：统一接口标准（一次开发，处处连接）
 
 ### 核心价值
 
-```
-没有 MCP 之前：
-  每个 AI 应用对接每个系统 = 定制开发
-  AI 应用 A 接数据库、AI 应用 B 也接数据库 → 各写一遍
+**没有 MCP 之前**：每个 AI 应用对接每个系统 = 定制开发
 
-有了 MCP：
-  数据库供应商提供"一个 MCP Server"
-  任何 AI 应用（支持 MCP 的）直接连接使用
-  一次开发，处处复用
-```
+**有了 MCP**：
+
+- 数据库供应商提供"一个 MCP Server"
+- 任何 AI 应用（支持 MCP 的）直接连接使用
+- **一次开发，处处复用**
 
 ---
 
 ## 二、MCP 架构
+
+### 核心概念深度解析
+
+### MCP（Model Context Protocol，模型上下文协议）
+
+> **严谨定义**：MCP 是由 Anthropic 于 2024 年提出的开放标准协议，用于规范化 LLM 与外部工具/数据源的连接。基于 JSON-RPC 2.0 协议，采用 Host → Client → Server 三层架构。MCP 提供三要素：工具（Tools，可调用函数）、资源（Resources，可读取数据）、提示词（Prompts，可复用模板）。核心价值是“一次开发，处处复用”，将 AI 与外部系统的连接从定制化变为标准化。
+
+> **通俗理解**：就像 USB 接口——以前每个设备（打印机、鼠标、键盘）都有专属接口，现在统一用 USB，插上就能用。MCP 就是 AI 的“USB 接口”，数据库、文件系统、API 只要实现 MCP Server，任何 AI 应用都能直接调用，不用每次都重新开发。
+
+### Agent Card（Agent 名片）
+
+> **严谨定义**：Agent Card 是 Agent 的自描述元数据，包含名称、描述、能力标签、端点地址、认证方式等信息。在 A2A（Agent-to-Agent）协议中，Agent Card 用于服务发现和能力匹配，类似微服务架构中的服务注册信息。
+
+> **通俗理解**：就像你的 LinkedIn 个人资料——告诉别人你叫什么、擅长什么、怎么联系你。Agent Card 就是 AI Agent 的“名片”，其他 Agent 看到名片就知道“这个 Agent 擅长简历筛选，可以通过这个地址调用它”。
+
+### 工具发现（Tool Discovery）
+
+> **严谨定义**：工具发现是指 MCP Client 在连接 Server 时，自动获取该 Server 暴露的所有工具列表及其参数描述（JSON Schema）的机制。这使得 LLM 能够动态了解可用工具，并在推理时选择合适的工具调用。工具发现是 Agent 自主决策的基础。
+
+> **通俗理解**：就像你进入一个新厨房，先看一眼灶台、烤箱、微波炉上都有什么按钮。工具发现就是 AI“查看”有哪些工具可用，每个工具能做什么、需要什么参数，然后决定“现在该用哪个工具”。
 
 ```
 ┌─────────────────────────────────────────┐
@@ -59,39 +75,41 @@
 
 ### MCP 三要素
 
-```
-1. 工具（Tools）：可调用的函数
-   类似 Function Calling 的函数定义，但标准化了协议
-
-2. 资源（Resources）：可读取的数据
-   文件、数据库记录、API 数据
-
-3. 提示词（Prompts）：可复用的 Prompt 模板
-   标准化的提示词共享机制
-```
+1. **工具（Tools）**：可调用的函数（类似 Function Calling，但标准化了协议）
+2. **资源（Resources）**：可读取的数据（文件、数据库记录、API 数据）
+3. **提示词（Prompts）**：可复用的 Prompt 模板（标准化的提示词共享机制）
 
 ---
 
 ## 三、MCP 与 Function Calling 的关系
 
-```
-Function Calling：模型与"你的函数"的接口（单应用内部）
-MCP：模型与"任意系统"的标准化接口（跨应用通用）
+**Function Calling**：模型与"你的函数"的接口（单应用内部）
+**MCP**：模型与"任意系统"的标准化接口（跨应用通用）
 
-关系：
-  MCP 是 Function Calling 的"标准化 + 生态化"
-  Function Calling 是你写代码时直接用的
-  MCP Server 把工具"包装"成标准协议
-  模型通过 MCP Client 发现并调用远程工具
+**关系**：
 
-你的项目视角：
-  现有 Function Calling（Spring AI tools）→ 单应用内
-  未来接入 MCP → 你的 AI 能调用全公司的系统！
-```
+- MCP 是 Function Calling 的"标准化 + 生态化"
+- Function Calling 是你写代码时直接用的
+- MCP Server 把工具"包装"成标准协议
+- 模型通过 MCP Client 发现并调用远程工具
+
+> 你的项目视角：现有 Function Calling（Spring AI tools）→ 单应用内；未来接入 MCP → 你的 AI 能调用全公司的系统！
 
 ---
 
 ## 四、MCP Server 开发实战
+
+### MCP Server 开发流程图
+
+```mermaid
+graph LR
+    A[定义工具 @Tool] --> B[配置 MCP Server]
+    B --> C[选择传输方式 stdio/SSE]
+    C --> D[启动服务]
+    D --> E[客户端配置连接]
+    E --> F[工具发现]
+    F --> G[调用测试]
+```
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -170,27 +188,24 @@ spring:
 
 ## 五、MCP 企业应用场景
 
-```
-场景 1：统一数据访问
-  公司各系统（HR/财务/CRM）各提供 MCP Server
-  AI 助手通过标准协议访问所有系统数据
-  不用为每个 AI 应用定制集成
+**场景 1：统一数据访问**
 
-场景 2：AI 开发工具链
-  IDE 的 MCP Server（代码库、构建、测试）
-  AI 编码助手直接调用（你正在用的 Qoder 就是 MCP Host！）
+- 公司各系统（HR/财务/CRM）各提供 MCP Server
+- AI 助手通过标准协议访问所有系统数据
 
-场景 3：跨部门 AI 协作
-  招聘 Agent ↔ HR 系统（MCP）
-  招聘 Agent ↔ 面试系统（MCP）
-  招聘 Agent ↔ 邮件系统（MCP）
-  一个 Agent 调度多个系统的能力
+**场景 2：AI 开发工具链**
 
-场景 4：Agent 生态
-  MCP 成为 Agent 的"标准插件接口"
-  任何人都能开发 MCP Server 挂到 Agent 上
-  类似"App Store"模式
-```
+- IDE 的 MCP Server（代码库、构建、测试）
+- AI 编码助手直接调用（你正在用的 Qoder 就是 MCP Host！）
+
+**场景 3：跨部门 AI 协作**
+
+- 招聘 Agent ↔ HR 系统（MCP） ↔ 面试系统（MCP） ↔ 邮件系统（MCP）
+
+**场景 4：Agent 生态**
+
+- MCP 成为 Agent 的"标准插件接口"
+- 类似"App Store"模式
 
 ---
 
@@ -248,86 +263,60 @@ spring:
 
 ## 八、MCP 生态现状（2026）
 
-```
-已支持 MCP 的平台：
-  Claude Desktop、Cursor、Qoder、VS Code
-  OpenAI 也支持（ANYC 协议，趋同趋势明显）
-  各大模型厂商逐步支持
+**已支持 MCP 的平台**：
 
-主流 MCP Server 示例：
-  数据库：PostgreSQL MCP、MySQL MCP
-  文件：文件系统 MCP、Git MCP
-  办公：Slack、飞书、钉钉、Google Drive
-  浏览器：Playwright MCP、Chrome DevTools MCP
-  开发：GitHub、GitLab、Jira
+- Claude Desktop、Cursor、Qoder、VS Code
+- OpenAI 也支持（ANYC 协议，趋同趋势明显）
 
-你环境中的 MCP（系统提醒可见）：
-  chrome-devtools、browser-use、schedule、qoder-computer-use
-  → 这些就是 MCP Server！你可以直接体验
-```
+**主流 MCP Server 示例**：
+
+| 类别 | 示例 |
+| --- | --- |
+| 数据库 | PostgreSQL MCP、MySQL MCP |
+| 文件 | 文件系统 MCP、Git MCP |
+| 办公 | Slack、飞书、钉钉、Google Drive |
+| 浏览器 | Playwright MCP、Chrome DevTools MCP |
+| 开发 | GitHub、GitLab、Jira |
+
+> 你环境中的 MCP：chrome-devtools、browser-use、schedule 等 → 这些就是 MCP Server！
 
 ---
 
 ## 九、MCP 的安全考量
 
-```
-1. 权限控制：MCP Server 暴露的工具 = 攻击面
-   最小暴露：只暴露业务需要的工具
-
-2. 认证授权：MCP 调用需要鉴权
-   远程 Server：API Key / OAuth
-   本地 Server：进程隔离
-
-3. 审计：MCP 调用同样要记录
-   谁调用了什么工具、参数、结果
-
-4. 供应链：MCP Server 来自第三方
-   审查来源、代码审计、依赖检查
-
-5. 数据流：MCP 可能把数据带到外部
-   敏感数据工具 → 本地部署 Server
-```
+1. **权限控制**：MCP Server 暴露的工具 = 攻击面，最小暴露原则
+2. **认证授权**：远程 Server 用 API Key / OAuth，本地 Server 用进程隔离
+3. **审计**：每次调用记录工具名/参数/调用方/结果摘要
+4. **供应链**：MCP Server 来自第三方，审查来源、代码审计、依赖检查
+5. **数据流**：敏感数据工具 → 本地部署 Server
 
 ---
 
 ## 十、未来趋势：Agent 与 MCP 的融合
 
-```
-趋势 1：MCP 成为 AI 应用的"USB-C"
-  标准化连接一切系统 → 生态爆发
+**趋势 1**：MCP 成为 AI 应用的"USB-C" → 标准化连接一切系统 → 生态爆发
 
-趋势 2：Agent 市场
-  组合"Agent + MCP Server 集"发布
-  类似：招聘 Agent + (HR系统MCP + 邮件MCP + 日历MCP)
+**趋势 2**：Agent 市场 → 组合"Agent + MCP Server 集"发布
 
-趋势 3：企业 MCP 治理
-  企业级 MCP 注册中心（类似 API 网关）
-  工具目录、权限、审计统一管理
+**趋势 3**：企业 MCP 治理 → 企业级 MCP 注册中心（类似 API 网关）
 
-趋势 4：多协议收敛
-  MCP / ANYC / A2A 等协议逐步统一
-  关注标准，不绑定单一厂商
+**趋势 4**：多协议收敛 → MCP / ANYC / A2A 等协议逐步统一
 
-你的机会：
-  把你们 HR 系统的核心能力封装成 MCP Server
-  → 任何 AI 应用都能调用你们的招聘能力
-  → 这是"AI 原生企业"的重要一步
-```
+> **你的机会**：把你们 HR 系统的核心能力封装成 MCP Server → 任何 AI 应用都能调用你们的招聘能力
 
 ---
 
 ## 十一、本课小结
 
-```
-核心要点：
-1. MCP = LLM 连接外部系统的开放标准（AI 的 USB 接口）
+> **核心要点**：
+
+1. MCP = LLM 连接外部系统的**开放标准**（AI 的 USB 接口）
 2. 架构：Host → Client → Server，JSON-RPC 协议
 3. 三要素：工具（调用）、资源（读取）、提示词（复用）
-4. MCP 是 Function Calling 的标准化 + 生态化
-5. 用 @Tool 注解即可开发 MCP Server（Spring AI 支持）
+4. MCP 是 Function Calling 的**标准化 + 生态化**
+5. 用 `@Tool` 注解即可开发 MCP Server（Spring AI 支持）
 6. 安全：最小暴露、鉴权、审计、供应链审查
 7. 趋势：MCP 治理中心 + Agent 生态市场
-```
 
 ---
 

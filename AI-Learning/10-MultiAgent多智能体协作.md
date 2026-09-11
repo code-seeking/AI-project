@@ -31,7 +31,40 @@
 多 Agent = 团队分工（CEO 规划、研发执行、QA 质检、销售对接）
 ```
 
+### 多 Agent 协作（Multi-Agent System）
+
+> **严谨定义**：多 Agent 系统（MAS）将复杂任务分解为多个专职 Agent 协作完成。每个 Agent 拥有独立的 System Prompt、工具集和上下文，通过消息传递协议进行通信。核心优势包括：①关注点分离（每个 Agent 专注单一职责）；②提示词优化（避免角色冲突）；③容错性（单点失败不影响全局）；④可扩展性（按需增减 Agent）。常见拓扑包括主管-工人、流水线、辩论/评审。
+
+> **通俗理解**：就像公司团队分工——一个人当 CEO 又当会计又当销售，什么都做不精；但分成 CEO（规划）、研发（执行）、QA（质检）、销售（对接）各做各的，每个人只做一件事但做到最好。多 Agent 就是把“一个人开公司”变成“团队协作”。
+
 **核心思想：每个 Agent 只做一件事，但做到最好。**
+
+### 多 Agent 协作模式全景图
+
+```mermaid
+graph TB
+    subgraph 主管-工人模式
+        S[Supervisor Agent] --> W1[Worker A]
+        S --> W2[Worker B]
+        S --> W3[Worker C]
+        W1 --> S
+        W2 --> S
+        W3 --> S
+    end
+    subgraph 流水线模式
+        P1[Agent A 提取] --> P2[Agent B 分析]
+        P2 --> P3[Agent C 生成]
+    end
+```
+
+### 多 Agent 协作模式对比
+
+| 模式 | 结构 | 优点 | 缺点 | 适用场景 |
+|------|------|------|------|----------|
+| 主管-工人 | 中心调度 | 结构清晰、易控制 | 主管是单点 | 复杂多步任务 |
+| 流水线 | 串行传递 | 简单、可预测 | 不灵活 | 固定流程任务 |
+| 辩论/评审 | 生成+审核 | 质量高 | 成本高 | 需要质量保证 |
+| 对等协作 | 平等通信 | 灵活 | 难控制 | 头脑风暴 |
 
 ---
 
@@ -174,7 +207,7 @@ Agent 状态：
 
 ---
 
-## 五点五、用 AI 工具实际体验
+## 五、用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 体验多 Agent 协作
 
@@ -306,7 +339,7 @@ Feedback: 报告质量良好，可以通过
 
 ---
 
-## 五点六、Java 开发者视角：多 Agent 协作实现
+## 六、Java 开发者视角：多 Agent 协作实现
 
 ```java
 /**
@@ -467,7 +500,7 @@ public class MultiAgentService {
 
 ---
 
-## 六、多 Agent 的冲突与协调
+## 七、多 Agent 的冲突与协调
 
 ```
 冲突场景 1：资源竞争
@@ -489,7 +522,7 @@ public class MultiAgentService {
 
 ---
 
-## 六、多 Agent 实战架构（结合你的项目）
+## 八、多 Agent 实战架构（结合你的项目）
 
 ```
 你项目未来的 Agent Mesh（记忆确认）：
@@ -520,7 +553,7 @@ public class MultiAgentService {
 
 ---
 
-## 七、多 Agent 的成本与效率
+## 九、多 Agent 的成本与效率
 
 ```
 成本构成：
@@ -537,7 +570,7 @@ public class MultiAgentService {
 
 ---
 
-## 八、本课小结
+## 十、本课小结
 
 ```
 核心要点：
@@ -551,7 +584,7 @@ public class MultiAgentService {
 
 ---
 
-## 九、思考题
+## 十一、思考题
 
 1. **你的招聘场景中，哪些任务适合拆成多 Agent？画出架构图。**
 2. **"简历分析"和"岗位匹配"两个 Agent 之间如何传递数据？消息格式是什么？**
@@ -560,7 +593,7 @@ public class MultiAgentService {
 
 ---
 
-## 十、实战练习
+## 十二、实战练习
 
 1. 把你项目的"推荐候选人"流程拆成 3 个 Agent，定义各自的职责
 2. 画出它们之间的消息流（谁发给谁、传什么）
@@ -569,7 +602,7 @@ public class MultiAgentService {
 
 ---
 
-## 十一、深度原理：多 Agent 的机制与工程挑战
+## 十三、深度原理：多 Agent 的机制与工程挑战
 
 ### 11.1 消息传递：多 Agent 通信的本质
 
@@ -733,7 +766,7 @@ public class MultiAgentService {
 
 ---
 
-## 十二、延伸阅读
+## 十四、延伸阅读
 
 - AutoGen（微软）：https://github.com/microsoft/autogen
 - CrewAI：https://github.com/crewAIInc/crewAI

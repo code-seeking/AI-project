@@ -30,6 +30,26 @@
 
 ## 二、协议对比
 
+### 核心概念深度解析
+
+### MCP（Model Context Protocol）
+
+> **严谨定义**：MCP 是 Anthropic 提出的开放标准协议，解决 Agent ↔ 工具的标准化连接。基于 JSON-RPC 2.0，采用 Host → Client → Server 三层架构，提供工具（Tools）、资源（Resources）、提示词（Prompts）三要素。核心价值是“一次开发，处处复用”，将 AI 与外部系统的连接从定制化变为标准化。
+
+> **通俗理解**：就像 USB 接口——以前每个设备都有专属接口，现在统一用 USB。MCP 就是 AI 的“USB 接口”，数据库、文件系统、API 只要实现 MCP Server，任何 AI 应用都能直接调用。
+
+### A2A（Agent-to-Agent Protocol）
+
+> **严谨定义**：A2A 是 Google 提出的 Agent 间通信协议，解决 Agent ↔ Agent 的任务委托与协作。核心概念包括：Agent Card（Agent 名片，描述能力和端点）、Task（任务，有状态流转：pending → running → completed/failed）、Message（协作消息）。Agent 通过 A2A 委托任务给其他 Agent，实现跨系统协作。
+
+> **通俗理解**：就像公司间的“业务委托”——招聘 Agent 需要筛选能力，就委托给筛选 Agent：“帮我筛选 Java 候选人”。筛选 Agent 接受任务、执行、返回结果。A2A 就是 Agent 之间的“业务往来协议”。
+
+### ANP（Agent Network Protocol）
+
+> **严谨定义**：ANP 是社区提出的 Agent 网络协议，解决大规模 Agent 的服务发现与路由。核心概念包括：Agent 注册中心（类似 Spring Cloud Eureka）、能力标签（按能力查找 Agent）、Agent Gateway（路由消息到目标 Agent）。ANP 让 Agent 能像微服务一样动态注册、发现、路由。
+
+> **通俗理解**：就像“服务注册中心”——Agent 启动时注册“我是筛选 Agent，擅长简历筛选”，其他 Agent 需要筛选能力时，先到注册中心查找，然后路由过去。ANP 就是 Agent 世界的“Nacos/Eureka”。
+
 | 维度 | MCP | A2A | ANP |
 |------|-----|-----|-----|
 | **连接对象** | Agent ↔ 工具 | Agent ↔ Agent | Agent 网络 |
@@ -97,6 +117,30 @@ MCP = AI 的 USB 接口（第 23 课已介绍）
 ---
 
 ## 四、A2A 实战
+
+### Agent 通信协议栈架构图
+
+```mermaid
+graph TD
+    subgraph MCP
+        M1[Host] --> M2[Client]
+        M2 --> M3[Server]
+        M3 --> M4[Tools]
+        M3 --> M5[Resources]
+        M3 --> M6[Prompts]
+    end
+    subgraph A2A
+        A1[Agent A] -->|Task 委托| A2[Agent B]
+        A2 -->|结果返回| A1
+        A1 --> A3[Agent Card]
+        A2 --> A4[Agent Card]
+    end
+    subgraph ANP
+        N1[Agent 注册中心] --> N2[Agent Gateway]
+        N2 --> N3[路由消息]
+        N3 --> N4[目标 Agent]
+    end
+```
 
 ### 4.1 设计动机
 
@@ -267,20 +311,18 @@ spring:
 
 ## 七、与 Java REST/RPC 的类比
 
-```
-Agent 通信协议          Java 对应
-────────────────────────────────────────
-MCP                 →   REST API + OpenAPI 文档
-A2A                 →   gRPC / 消息队列（任务委托）
-ANP 注册中心         →   Nacos / Eureka
-ANP 网关            →   Spring Cloud Gateway
-Agent Card          →   服务元数据 / Swagger 文档
+| Agent 通信协议 | Java 对应 |
+|--------------|----------|
+| MCP | REST API + OpenAPI 文档 |
+| A2A | gRPC / 消息队列（任务委托） |
+| ANP 注册中心 | Nacos / Eureka |
+| ANP 网关 | Spring Cloud Gateway |
+| Agent Card | 服务元数据 / Swagger 文档 |
 
-你的 HR 项目已有：
-  REST API（Controller）→ 可升级为 MCP Server
-  工作流引擎          → 可集成 A2A 任务委托
-  微服务架构          → 可引入 ANP 服务发现
-```
+**你的 HR 项目已有**：
+- REST API（Controller）→ 可升级为 MCP Server
+- 工作流引擎 → 可集成 A2A 任务委托
+- 微服务架构 → 可引入 ANP 服务发现
 
 ---
 

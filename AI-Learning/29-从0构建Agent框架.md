@@ -26,6 +26,26 @@
 
 ## 二、框架架构设计
 
+### 核心概念深度解析
+
+### Agent 框架四层架构
+
+> **严谨定义**：Agent 框架的四层架构包括：LLM 层（统一接口，适配多模型）、Tool 层（工具抽象 + 注册中心）、Agent 层（范式实现，如 ReAct/Reflection）、Memory 层（消息管理 + 压缩策略）。每层独立可插拔，支持不同模型、工具、范式的组合。
+
+> **通俗理解**：就像 Spring 框架的分层架构——Controller 层（Agent 层）处理业务逻辑，Service 层（Tool 层）执行具体操作，DAO 层（LLM 层）访问数据，Session（Memory 层）管理状态。Agent 框架也是分层设计，每层负责自己的职责。
+
+### Tool 抽象（工具抽象）
+
+> **严谨定义**：Tool 抽象是对可调用函数的统一封装，包括：名称（name）、描述（description）、参数描述（JSON Schema）、执行逻辑（execute 方法）。Agent 通过 Tool 抽象动态发现和调用工具，无需硬编码。工具注册中心（ToolRegistry）管理所有可用工具，生成给 LLM 的 function schema。
+
+> **通俗理解**：就像 Java 的 Function 接口——所有工具都实现同一个接口，只是具体逻辑不同。Agent 不用关心工具内部怎么实现，只要知道“这个工具叫什么、能做什么、需要什么参数”，然后调用就行。
+
+### Memory 管理（记忆管理）
+
+> **严谨定义**：Memory 管理是 Agent 框架中负责消息历史存储、检索、压缩的组件。核心挑战是 Token 有限 vs 信息无限。简单实现是内存列表（SimpleMemory），高级实现包括压缩记忆（CompressingMemory，超过阈值时摘要化旧消息）、向量检索（VectorStoreMemory，按相关性召回历史）。
+
+> **通俗理解**：就像你的 HttpSession——存什么、不存什么、什么时候过期，都需要策略。Memory 管理就是决定“Agent 应该记住什么、忘记什么”。全量历史太占空间，压缩过度又丢失细节，需要平衡。
+
 ```
 ┌─────────────────────────────────────┐
 │           Application               │
@@ -312,6 +332,34 @@ public class CompressingMemory implements Memory {
 
 ## 七、完整使用示例
 
+### Agent 框架组件关系图
+
+```mermaid
+graph TD
+    A[Application 业务代码] --> B[Agent Layer]
+    B --> C[SimpleAgent]
+    B --> D[ReActAgent]
+    B --> E[ReflectionAgent]
+    C --> F[LLM Layer]
+    D --> F
+    E --> F
+    C --> G[Tool Layer]
+    D --> G
+    E --> G
+    F --> H[OpenAI]
+    F --> I[Ollama]
+    F --> J[Claude]
+    G --> K[ToolRegistry]
+    K --> L[SearchCandidateTool]
+    K --> M[GetPositionTool]
+    K --> N[AnalyzeResumeTool]
+    C --> O[Memory Layer]
+    D --> O
+    E --> O
+    O --> P[SimpleMemory]
+    O --> Q[CompressingMemory]
+```
+
 ```java
 // 组装框架
 LLM llm = new OpenAILLM("gpt-4");
@@ -341,24 +389,22 @@ System.out.println(result);
 
 ## 八、Java 版本设计思路对比
 
-```
-Python HelloAgents          Java 对应设计
-─────────────────────────────────────────
-dict 消息               →   Message 类（类型安全）
-动态类型工具             →   Tool 抽象类 + JsonSchema
-函数注册（装饰器）        →   ToolRegistry + @Tool 注解
-列表 Memory             →   Memory 接口 + 多种实现
-async/await             →   CompletableFuture / Virtual Threads
+| Python HelloAgents | Java 对应设计 |
+|-------------------|---------------|
+| dict 消息 | Message 类（类型安全） |
+| 动态类型工具 | Tool 抽象类 + JsonSchema |
+| 函数注册（装饰器） | ToolRegistry + @Tool 注解 |
+| 列表 Memory | Memory 接口 + 多种实现 |
+| async/await | CompletableFuture / Virtual Threads |
 
-Java 优势：
-  + 类型安全：编译期发现错误
-  + 企业集成：Spring 生态无缝对接
-  + 性能：虚拟线程支持高并发 Agent
+**Java 优势**：
+- **类型安全**：编译期发现错误
+- **企业集成**：Spring 生态无缝对接
+- **性能**：虚拟线程支持高并发 Agent
 
-Java 劣势：
-  - 代码量多：抽象层需要更多样板代码
-  - 生态：AI 工具库不如 Python 丰富
-```
+**Java 劣势**：
+- 代码量多：抽象层需要更多样板代码
+- 生态：AI 工具库不如 Python 丰富
 
 ---
 
