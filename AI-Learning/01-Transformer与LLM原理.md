@@ -36,7 +36,11 @@
 2017 年 Google 发表了一篇论文《Attention Is All You Need》，提出了 **Transformer** 架构。
 这是 GPT、Claude、通义千问、DeepSeek 等所有现代大模型的基石。
 
-**核心创新：Self-Attention（自注意力机制）**
+### Self-Attention（自注意力机制）
+
+> **严谨定义**：自注意力机制（Self-Attention）是 Transformer 架构的核心计算单元，通过计算序列中每个位置与其他所有位置的相关性权重（Attention Score），实现对上下文信息的动态聚合。其数学表达为 Attention(Q,K,V) = softmax(QK^T/√d_k)V，其中 Q、K、V 分别为查询、键、值矩阵，d_k 为键向量维度。
+
+> **通俗理解**：就像你在读一句话时，大脑会自动关注最相关的词语。比如读“苹果公司的CEO”时，你会自然地把“苹果”和“公司”关联起来，而不是把“苹果”理解为水果。Self-Attention 就是让模型学会“该关注谁”。
 
 #### 直观类比
 
@@ -116,6 +120,22 @@ Transformer 的 Self-Attention **同时看所有词**：
 └─────────────────────────────┘
 ```
 
+### Transformer 整体处理流程
+
+```mermaid
+graph TB
+    A[输入文本] --> B[Tokenization 分词]
+    B --> C[Token Embedding 词嵌入]
+    C --> D[Positional Encoding 位置编码]
+    D --> E[Transformer Block × N 层]
+    E --> F[Multi-Head Attention 多头注意力]
+    F --> G[Feed-Forward 前馈网络]
+    G --> H[Add & LayerNorm 残差归一化]
+    H --> E
+    E --> I[输出层 概率分布]
+    I --> J[采样生成 Token]
+```
+
 ### 关键概念解释
 
 **Multi-Head Attention（多头注意力）**
@@ -175,21 +195,31 @@ Transformer 的 Self-Attention **同时看所有词**：
   输出: "根据简历内容，该候选人有以下优势...不足之处在于..."
 ```
 
-### 4.3 RLHF（人类反馈强化学习）
+### RLHF（人类反馈强化学习）
 
-让模型学会"什么样的回答是人类满意的"。
+> **严谨定义**：RLHF（Reinforcement Learning from Human Feedback）是一种模型对齐技术，分为三阶段：①监督微调（SFT）使模型适应指令格式；②训练奖励模型（Reward Model）学习人类偏好排序；③用 PPO 等强化学习算法优化策略模型，使其输出更符合人类期望。核心损失函数结合了语言建模损失与奖励信号。
+
+> **通俗理解**：就像培训新员工——先让他看大量范文学习基本写法（预训练），再手把手教他按你的要求写（微调），最后通过“这个写得好、那个要改”的反馈让他越来越懂你的口味（RLHF）。三个阶段，从“会写”到“写对”再到“写好”。
+
+让模型学会“什么样的回答是人类满意的”。
 
 ```
 同一个问题，模型生成多个回答：
   回答 A: 详细、准确、有条理    → 人类评分: 👍
   回答 B: 简短、有错误           → 人类评分: 👎
   
-用这些反馈训练一个"奖励模型"，然后用强化学习优化 LLM
+用这些反馈训练一个“奖励模型”，然后用强化学习优化 LLM
 ```
 
 ---
 
 ## 五、LLM 推理：自回归生成
+
+### 自回归生成（Autoregressive Generation）
+
+> **严谨定义**：自回归生成是 LLM 推理的核心范式，模型在每一步将已生成的 token 序列作为输入，条件概率地预测下一个 token：P(x_t | x_1, ..., x_{t-1})。每生成一个 token 都需要完整的前向传播计算，因此生成延迟与输出长度线性相关。采样策略（Temperature、Top-P、Top-K）控制生成的随机性与多样性。
+
+> **通俗理解**：就像你在填空题里一个字一个字地写答案——每写一个字，都要重新读一遍前面所有内容，再决定下一个字写什么。写得越长越慢，而且每次写出来的字都会影响后面的选择。这就是为什么 AI 回答是“流式”出来的，而不是一次性蹦出来。
 
 当你调用 LLM API 时，模型是怎么生成回答的？
 
@@ -248,7 +278,7 @@ ChatResponse response = chatModel.call(prompt);
 - AI 面试 → Prompt + LLM → 面试评估
 - RAG 问答 → 检索相关文档 → 注入 Prompt → LLM 生成回答
 
---
+---
 
 ## 七点五、用 AI 工具实际体验
 

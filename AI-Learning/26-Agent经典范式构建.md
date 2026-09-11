@@ -30,6 +30,26 @@
 
 ## 二、ReAct 范式
 
+### 核心概念深度解析
+
+### ReAct（Reasoning + Acting）
+
+> **严谨定义**：ReAct 是一种将推理（Reasoning）与行动（Acting）交织在一起的 Agent 范式。核心循环为：Thought（思考当前状态和下一步）→ Action（调用工具执行）→ Observation（观察工具返回结果）→ Thought（基于结果继续思考）。每一步由 LLM 动态决策，适合工具调用型任务。局限是长任务中容易“走偏”，Token 消耗线性增长。
+
+> **通俗理解**：就像你用调试器（Debugger）单步执行代码——每一步先看变量值（Thought），决定下一步怎么走（Action），然后看执行结果（Observation），再决定下一步。ReAct 就是“走一步看一步”的策略，灵活但容易迷路。
+
+### Plan-and-Solve（先规划后执行）
+
+> **严谨定义**：Plan-and-Solve 是一种两阶段 Agent 范式：第一阶段（Planner）由 LLM 生成完整执行计划，将复杂任务分解为多个子任务；第二阶段（Executor）逐步执行计划，每步可调用工具或调整策略。优势是计划透明、目标聚焦，适合长链条分析型任务。局限是计划可能“过时”（执行中发现新信息）。
+
+> **通俗理解**：就像做项目——先画架构图、排 WBS（工作分解结构），然后按里程碑逐步推进。Plan-and-Solve 就是“先想清楚再动手”，不会像 ReAct 那样走着走着就偏了，但计划赶不上变化。
+
+### Reflection（自我反思）
+
+> **严谨定义**：Reflection 是一种通过自我审视迭代改进输出质量的 Agent 范式。包含两个角色：Generator（生成初始输出）和 Reflector（审视输出并给出改进建议）。循环执行“生成 → 反思 → 改进 → 再反思”，直到 Reflector 满意（输出“SATISFIED”）或达到最大轮数。适合内容生成型任务，如 JD 撰写、面试评估报告。
+
+> **通俗理解**：就像你写完代码后自己做 Code Review——“这里逻辑不对，那里缺少边界检查”，然后修改，再 Review，直到满意。Reflection 就是让 AI “自己挑自己的刺”，反复打磨输出质量。
+
 ### 2.1 核心思想
 
 ```
@@ -266,6 +286,27 @@ public class ReflectionAgent {
 ---
 
 ## 五、三种范式对比
+
+### 三种范式执行流程图
+
+```mermaid
+graph LR
+    subgraph ReAct
+        A1[Thought] --> A2[Action]
+        A2 --> A3[Observation]
+        A3 --> A1
+    end
+    subgraph Plan-and-Solve
+        B1[Planner 生成计划] --> B2[Executor 逐步执行]
+        B2 --> B3[汇总结果]
+    end
+    subgraph Reflection
+        C1[Generator 生成] --> C2[Reflector 反思]
+        C2 --> C3{满意?}
+        C3 -->|否| C1
+        C3 -->|是| C4[最终输出]
+    end
+```
 
 | 维度 | ReAct | Plan-and-Solve | Reflection |
 |------|-------|----------------|------------|

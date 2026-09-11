@@ -27,6 +27,26 @@
 
 ## 二、AutoGen（微软）
 
+### 核心概念深度解析
+
+### AutoGen（多 Agent 对话协作）
+
+> **严谨定义**：AutoGen 是微软开源的多 Agent 对话协作框架，核心理念是 Agent 之间通过“对话”协作完成任务。关键概念包括：AssistantAgent（有 LLM 的 Agent，能思考和生成）、UserProxyAgent（代表用户，能执行代码/工具）、GroupChat（多 Agent 群聊，由 Manager 协调）。适合多角色协作、代码生成与执行场景。
+
+> **通俗理解**：就像一个“多人会议”——分析师、执行者、审核者坐在一起讨论问题。分析师提出方案，执行者去干活，审核者检查结果。AutoGen 就是让多个 AI 角色“开会讨论”，协作完成复杂任务。
+
+### LangGraph（图结构工作流引擎）
+
+> **严谨定义**：LangGraph 是 LangChain 生态中的图结构工作流引擎，用“图”定义 Agent 执行流程。核心概念包括：State（全局状态）、Node（处理节点）、Edge（节点间转移）、Checkpoint（状态持久化）。支持条件分支、循环、人工确认（Human-in-the-loop），生产就绪度最高。
+
+> **通俗理解**：就像用状态机定义业务流程——“简历筛选”节点完成后进入“匹配分析”节点，然后“人工确认”节点，如果拒绝就回到“筛选”节点。LangGraph 让你用“图”的方式定义复杂工作流，清晰可视化，状态可恢复。
+
+### AgentScope（分布式游戏化 Agent）
+
+> **严谨定义**：AgentScope 是阿里开源的分布式 Agent 框架，采用游戏化设计理念，支持大规模 Agent 集群部署。核心概念包括：Agent（独立执行单元）、Pipeline（执行流水线）、Message（Agent 间通信）、Service（工具函数封装）。支持串行、并行、条件等多种执行模式，适合大规模仿真、游戏 AI 场景。
+
+> **通俗理解**：就像微服务架构——每个 Agent 是一个独立服务，可以部署在不同机器上，通过消息通信。AgentScope 就是“分布式 Agent 集群”，适合需要大规模 Agent 同时工作的场景（如模拟城市交通、游戏 NPC）。
+
 ### 2.1 核心机制
 
 ```
@@ -260,6 +280,23 @@ result = app.invoke({"goal": "招聘 Java 开发"})
 
 ## 六、框架选型矩阵
 
+### Agent 框架选型流程图
+
+```mermaid
+graph TD
+    A[任务类型] --> B{多角色协作?}
+    B -->|是| C[AutoGen]
+    B -->|否| D{复杂工作流?}
+    D -->|是| E{需要状态持久化?}
+    E -->|是| F[LangGraph]
+    E -->|否| G[LangGraph 简化版]
+    D -->|否| H{大规模分布式?}
+    H -->|是| I[AgentScope]
+    H -->|否| J{双角色协商?}
+    J -->|是| K[CAMEL]
+    J -->|否| L[Spring AI 自研]
+```
+
 | 维度 | AutoGen | AgentScope | CAMEL | LangGraph |
 |------|---------|------------|-------|-----------|
 | **核心模式** | 多 Agent 对话 | 分布式流水线 | 角色扮演 | 图工作流 |
@@ -272,23 +309,21 @@ result = app.invoke({"goal": "招聘 Java 开发"})
 
 ## 七、Java 生态对应
 
-```
-Python 框架          Java 对应
-─────────────────────────────────────
-AutoGen         →    Spring AI + 多 Agent Service
-AgentScope      →    Spring Cloud + Agent 微服务
-CAMEL           →    Spring Event + Agent 消息驱动
-LangGraph       →    LangChain4j + 状态机
+| Python 框架 | Java 对应设计 |
+|------------|--------------|
+| AutoGen | Spring AI + 多 Agent Service |
+| AgentScope | Spring Cloud + Agent 微服务 |
+| CAMEL | Spring Event + Agent 消息驱动 |
+| LangGraph | LangChain4j + 状态机 |
 
-Java 开发者推荐路径：
-  1. 快速原型：用 Dify / n8n 验证
-  2. 生产系统：Spring AI（原生 Java，企业级）
-  3. 学习研究：Python 框架跑通概念，再 Java 实现
+**Java 开发者推荐路径**：
+1. 快速原型：用 Dify / n8n 验证
+2. 生产系统：Spring AI（原生 Java，企业级）
+3. 学习研究：Python 框架跑通概念，再 Java 实现
 
-你的 HR 项目：
-  已有 Spring AI 基础 → 直接用 Spring AI 实现 Agent
-  参考 Python 框架的设计思想，用 Java 模式落地
-```
+**你的 HR 项目**：
+- 已有 Spring AI 基础 → 直接用 Spring AI 实现 Agent
+- 参考 Python 框架的设计思想，用 Java 模式落地
 
 ---
 
