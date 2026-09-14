@@ -22,12 +22,42 @@ function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// ============ 图片内嵌为 base64 data URI ============
+// PDF 由无头浏览器打印生成，依赖相对路径/网络加载图片容易失败（尤其 file:// 页面），
+// 直接内联字节可保证架构图 100% 出现在 PDF 中。
+const MIME = {
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml',
+};
+const imgCache = new Map();
+const missingImages = new Set();
+
+function toDataUri(src) {
+  if (imgCache.has(src)) return imgCache.get(src);
+  let out = src;
+  if (!/^(https?:|data:)/i.test(src)) {
+    const abs = path.resolve(DIR, decodeURIComponent(src.split('?')[0]));
+    try {
+      const ext = path.extname(abs).toLowerCase();
+      const b64 = fs.readFileSync(abs).toString('base64');
+      out = `data:${MIME[ext] || 'application/octet-stream'};base64,${b64}`;
+    } catch (e) {
+      missingImages.add(src);
+      console.warn(`⚠️ 图片读不到：${src} （期望 ${abs}）`);
+    }
+  }
+  imgCache.set(src, out);
+  return out;
+}
+
 function inline(text) {
   let s = escapeHtml(text);
   // 行内代码 `code`
   s = s.replace(/`([^`]+)`/g, (m, c) => `<code>${c}</code>`);
   // 加粗 **bold**
   s = s.replace(/\*\*([^*]+)\*\*/g, (m, c) => `<strong>${c}</strong>`);
+  // 图片 ![alt](src) —— 必须在链接规则之前处理，否则会被当成普通链接，PDF 里就看不到图
+  s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, alt, src) => `<img src="${toDataUri(src)}" alt="${alt}"/>`);
   // 链接 [text](url)
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, t, u) => `<a href="${u}">${t}</a>`);
   // 斜体 *italic*
@@ -61,6 +91,18 @@ function mdToHtml(md) {
     }
   }
 
+  // 代码块出口：mermaid 源码转成待渲染容器，其余保持高亮代码块
+  function flushCode() {
+    const src = codeBuf.join('\n');
+    if (codeLang === 'mermaid' && src.trim()) {
+      out.push(`<div class="mermaid">${escapeHtml(src)}</div>`);
+    } else {
+      out.push(`<pre><code class="lang-${escapeHtml(codeLang || 'text')}">${escapeHtml(src)}</code></pre>`);
+    }
+    inCode = false;
+    codeBuf = [];
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const raw = lines[i];
     const line = raw.trim();
@@ -73,8 +115,7 @@ function mdToHtml(md) {
         codeLang = line.slice(3).trim();
         codeBuf = [];
       } else {
-        out.push(`<pre><code class="lang-${escapeHtml(codeLang || 'text')}">${escapeHtml(codeBuf.join('\n'))}</code></pre>`);
-        inCode = false;
+        flushCode();
       }
       continue;
     }
@@ -131,9 +172,7 @@ function mdToHtml(md) {
     out.push(`<p>${inline(line)}</p>`);
   }
   closeList(); closeTable();
-  if (inCode) {
-    out.push(`<pre><code class="lang-${escapeHtml(codeLang || 'text')}">${escapeHtml(codeBuf.join('\n'))}</code></pre>`);
-  }
+  if (inCode) flushCode();
   return out.join('\n');
 }
 
@@ -142,7 +181,7 @@ function mdToHtml(md) {
 (async () => {
   // 1. 收集 md 文件（排除本脚本和临时文件）
   const files = fs.readdirSync(DIR)
-    .filter(f => f.endsWith('.md') && !f.startsWith('~'))
+    .filter(f => f.endsWith('.md') && !f.startsWith('~') && f !== 'README.md')
     .sort((a, b) => {
       const na = parseInt(a) || 0, nb = parseInt(b) || 0;
       return na - nb || a.localeCompare(b, 'zh');
@@ -231,7 +270,15 @@ function mdToHtml(md) {
   li { margin: 4px 0; }
   hr { border: none; border-top: 1px dashed #d1d5db; margin: 20px 0; }
   a { color: #2563eb; }
-  img { max-width: 92%; display: block; margin: 14px auto; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
+  img { max-width: 92%; max-height: 225mm; display: block; margin: 14px auto; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
+  /* Mermaid 图：渲染成功后交给 SVG；渲染失败（无网络）则降级为可读的源码框 */
+  .mermaid { text-align: center; margin: 14px auto; page-break-inside: avoid; }
+  .mermaid svg { max-width: 100%; height: auto; }
+  .mermaid:not([data-processed="true"]) {
+    display: block; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px;
+    padding: 10px 14px; font-family: Consolas, "Courier New", monospace;
+    font-size: 9pt; line-height: 1.5; white-space: pre-wrap; text-align: left; color: #475569;
+  }
 </style>
 </head>
 <body>
@@ -242,6 +289,23 @@ function mdToHtml(md) {
   </div>
   ${toc}
   ${sections.join('\n')}
+<script type="module">
+  // 流程图渲染：失败不阻断构建（架构图为 PNG内联，不依赖此处）
+  try {
+    const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      fontFamily: '"Microsoft YaHei", "微软雅黑", sans-serif',
+    });
+    await mermaid.run({ querySelector: '.mermaid' });
+    window.__mermaidStatus = 'ok';
+  } catch (e) {
+    window.__mermaidStatus = 'skip: ' + ((e && e.message) || e);
+  }
+  window.__bootDone = true;
+</script>
 </body>
 </html>`;
 
@@ -256,7 +320,30 @@ function mdToHtml(md) {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--font-render-hinting=none'],
   });
   const page = await browser.newPage();
-  await page.goto('file:///' + tmpHtml.replace(/\\/g, '/'), { waitUntil: 'networkidle0', timeout: 120000 });
+  await page.goto('file:///' + tmpHtml.replace(/\\/g, '/'), { waitUntil: 'domcontentloaded', timeout: 60000 });
+  // 等待 Mermaid 渲染结束；超时不致命，会降级为源码框
+  await page.waitForFunction('window.__bootDone === true', { timeout: 60000, polling: 500 })
+    .catch(() => console.warn('⚠️ Mermaid 加载超时（无网络？），流程图将以源码形式呈现'));
+  await page.evaluateHandle('document.fonts.ready').catch(() => {});
+
+  // 诊断：把“图到底有没有进去”量化输出到日志
+  const diag = await page.evaluate(() => {
+    const imgs = Array.from(document.images);
+    return {
+      imgTotal: imgs.length,
+      imgOk: imgs.filter(i => i.complete && i.naturalWidth > 0).length,
+      imgBroken: imgs.filter(i => i.complete && i.naturalWidth === 0).map(i => (i.alt || 'untitled')),
+      mermaidTotal: document.querySelectorAll('.mermaid').length,
+      mermaidOk: document.querySelectorAll('.mermaid[data-processed="true"]').length,
+      mermaidStatus: window.__mermaidStatus || 'timeout',
+    };
+  });
+  console.log(`🖼  架构图加载：${diag.imgOk}/${diag.imgTotal} 张`);
+  if (diag.imgBroken.length) console.log('   加载失败：' + diag.imgBroken.join(', '));
+  console.log(`📈 流程图渲染：${diag.mermaidOk}/${diag.mermaidTotal} 幅（${diag.mermaidStatus}）`);
+  if (missingImages.size) console.log(`⚠️  MD 中引用但磁盘上不存在的图片：${[...missingImages].join(', ')}`);
+  if (diag.imgTotal === 0) console.warn('❗ HTML 里一张图都没有 —— 请检查 .md 的 ![](png) 语法');
+
   console.log('📄 生成 PDF 中...');
   await page.pdf({
     path: OUTPUT_PDF,
@@ -275,6 +362,10 @@ function mdToHtml(md) {
   console.log(`✅ PDF 生成成功！`);
   console.log(`   文件：${OUTPUT_PDF}`);
   console.log(`   大小：${size} MB，共 ${files.length} 章`);
+  if (diag.imgOk === 0) {
+    console.error('❌ 警告：PDF 中没有任何图片，请检查图片引用！');
+    process.exitCode = 2;
+  }
   console.log(`\n📌 以后追加新课程：把新的 .md 文件放入本目录（如 13-xxx.md），重新运行 node build-pdf.js 即可。`);
 })().catch(err => {
   console.error('❌ PDF 生成失败：', err.message);
