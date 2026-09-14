@@ -231,6 +231,7 @@ function mdToHtml(md) {
   li { margin: 4px 0; }
   hr { border: none; border-top: 1px dashed #d1d5db; margin: 20px 0; }
   a { color: #2563eb; }
+  img { max-width: 92%; display: block; margin: 14px auto; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
 </style>
 </head>
 <body>
@@ -244,7 +245,9 @@ function mdToHtml(md) {
 </body>
 </html>`;
 
-  // 3. 生成 PDF
+  // 3. 生成 PDF（先写入临时 HTML 文件，再用 file:// 打开，保证相对路径图片能加载）
+  const tmpHtml = path.join(DIR, '~pdf-preview.html');
+  fs.writeFileSync(tmpHtml, html, 'utf-8');
   const executablePath = fs.existsSync(EDGE_PATH) ? EDGE_PATH : undefined;
   console.log('🚀 启动浏览器（' + (executablePath || '默认 Chrome') + '）...');
   const browser = await puppeteer.launch({
@@ -253,7 +256,7 @@ function mdToHtml(md) {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--font-render-hinting=none'],
   });
   const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: 'networkidle0', timeout: 60000 });
+  await page.goto('file:///' + tmpHtml.replace(/\\/g, '/'), { waitUntil: 'networkidle0', timeout: 120000 });
   console.log('📄 生成 PDF 中...');
   await page.pdf({
     path: OUTPUT_PDF,
@@ -266,6 +269,7 @@ function mdToHtml(md) {
     preferCSSPageSize: true,
   });
   await browser.close();
+  fs.unlinkSync(tmpHtml);
 
   const size = (fs.statSync(OUTPUT_PDF).size / 1024 / 1024).toFixed(2);
   console.log(`✅ PDF 生成成功！`);
