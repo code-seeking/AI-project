@@ -146,7 +146,7 @@ try {
   & $git -C "D:\acme\AI-project" add -A 2>&1 | Out-File $log -Append -Encoding utf8
   "--- staged ---" | Out-File $log -Append -Encoding utf8
   & $git -C "D:\acme\AI-project" status --short 2>&1 | Out-File $log -Append -Encoding utf8
-  & $git -C "D:\acme\AI-project" commit -m "docs: renumber chapter headings to arabic numerals (7.5/7.6 insertion sections); fix(pdf): embed architecture diagrams as jpeg + render mermaid flowcharts offline + raise print timeout" 2>&1 |
+  & $git -C "D:\acme\AI-project" commit -m "docs: add repo landing README + LICENSE + course banner; make all 32 lessons clickable with learning paths; add nav back-to-TOC links" 2>&1 |
     Out-File $log -Append -Encoding utf8
   $commitExit = $LASTEXITCODE
   "COMMIT EXIT: $commitExit" | Out-File $log -Append -Encoding utf8

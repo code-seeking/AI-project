@@ -754,6 +754,6 @@ Agent 比单次调用危险得多：
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) | [第 10 课：Multi-Agent 多智能体协作](10-MultiAgent多智能体协作.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) | [第 10 课：Multi-Agent 多智能体协作](10-MultiAgent多智能体协作.md) | [课程目录](README.md) |

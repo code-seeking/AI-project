@@ -736,6 +736,6 @@ Prompt 里的每个字都花钱（输入计费）
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) | [第 04 课：Embedding 与语义空间](04-Embedding与语义空间.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) | [第 04 课：Embedding 与语义空间](04-Embedding与语义空间.md) | [课程目录](README.md) |

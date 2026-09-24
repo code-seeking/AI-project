@@ -790,6 +790,6 @@ NDCG@K（归一化折损累积增益）：
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| [第 06 课：RAG 检索增强生成（上）](06-RAG检索增强生成上.md) | [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 06 课：RAG 检索增强生成（上）](06-RAG检索增强生成上.md) | [第 08 课：Function Calling 与工具调用](08-FunctionCalling与工具调用.md) | [课程目录](README.md) |

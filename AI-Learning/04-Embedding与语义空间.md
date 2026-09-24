@@ -665,6 +665,6 @@ InfoNCE 损失：
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| [第 03 课：Prompt Engineering 提示工程](03-PromptEngineering提示工程.md) | [第 05 课：向量数据库](05-向量数据库.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 03 课：Prompt Engineering 提示工程](03-PromptEngineering提示工程.md) | [第 05 课：向量数据库](05-向量数据库.md) | [课程目录](README.md) |

@@ -600,6 +600,6 @@ Top-P（Nucleus）：取累积概率刚超过 P 的最小集合再采样
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| — | [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 00 课：学习路线图](00-学习路线图.md) | [第 02 课：Tokenization 分词原理](02-Tokenization分词原理.md) | [课程目录](README.md) |

@@ -776,6 +776,6 @@ public class MultiAgentService {
 
 ## 导航
 
-| 上一课 | 下一课 |
-| --- | --- |
-| [第 09 课：AI Agent 智能体](09-AIAgent智能体.md) | [第 11 课：AI 工作流引擎](11-AI工作流引擎.md) |
+| 上一课 | 下一课 | 返回 |
+| --- | --- | --- |
+| [第 09 课：AI Agent 智能体](09-AIAgent智能体.md) | [第 11 课：AI 工作流引擎](11-AI工作流引擎.md) | [课程目录](README.md) |
