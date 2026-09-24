@@ -8,3 +8,9 @@ dist/
 
 # build-pdf.js 的中间产物：内联了全部 base64 图片，单个文件可达数十 MB，绝对不能进仓库
 ~pdf-preview.html
+
+# 环境变量文件含密钥，禁止入库（.example 模板不受影响）
+.env
+.env.*
+!*.env.example
+!*.example
