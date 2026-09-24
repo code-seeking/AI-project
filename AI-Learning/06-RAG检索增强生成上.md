@@ -6,7 +6,7 @@
 
 ---
 
-## 一、为什么需要 RAG？
+## 1. 为什么需要 RAG？
 
 ### 幻觉（Hallucination）
 
@@ -52,7 +52,7 @@
 
 ---
 
-## 二、RAG 完整流程图
+## 2. RAG 完整流程图
 
 > 📊 **架构图参考**：
 > ![RAG 完整架构](rag-architecture.png)
@@ -107,7 +107,7 @@ graph TB
 
 ---
 
-## 三、离线阶段：文档入库（建库）
+## 3. 离线阶段：文档入库（建库）
 
 ### 3.1 文档加载与解析
 
@@ -181,7 +181,7 @@ for (Chunk chunk : chunks) {
 
 ---
 
-## 四、在线阶段：检索增强生成
+## 4. 在线阶段：检索增强生成
 
 ### 4.1 查询处理
 
@@ -256,7 +256,7 @@ LLM 基于 Prompt 生成回答
 
 ---
 
-## 五、最小可用 RAG 实现（Java 伪代码）
+## 5. 最小可用 RAG 实现（Java 伪代码）
 
 ```java
 @Service
@@ -281,7 +281,7 @@ public class RagService {
 
 ---
 
-## 六、用 AI 工具实际体验
+## 6. 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 理解 RAG 的工作原理
 
@@ -407,7 +407,7 @@ RAG Prompt 组装的核心技巧：
 
 ---
 
-## 七、Java 开发者视角：RAG 完整实现
+## 7. Java 开发者视角：RAG 完整实现
 
 ```java
 /**
@@ -527,7 +527,7 @@ public class RagService {
 
 ---
 
-## 八、RAG 失败的典型场景与排查
+## 8. RAG 失败的典型场景与排查
 
 ```
 场景 1：回答与资料不符（检索到但模型没用）
@@ -551,7 +551,7 @@ public class RagService {
 
 ---
 
-## 九、与你项目的关联
+## 9. 与你项目的关联
 
 你项目中的 RAG 知识库问答已经实现：
 
@@ -571,7 +571,7 @@ public class RagService {
 
 ---
 
-## 十、本课小结
+## 10. 本课小结
 
 ```
 核心要点：
@@ -585,7 +585,7 @@ public class RagService {
 
 ---
 
-## 十一、思考题
+## 11. 思考题
 
 1. **为什么 RAG 比微调更适合你的 HR 简历知识库场景？**
 2. **切块大小 200 和 2000 各有什么优缺点？你的简历适合多大？**
@@ -594,7 +594,7 @@ public class RagService {
 
 ---
 
-## 十二、实战练习
+## 12. 实战练习
 
 1. 用你项目的知识库上传一份文档，观察切块结果
 2. 手动对切块结果 Embedding，检查块与块的语义连续性
@@ -603,7 +603,7 @@ public class RagService {
 
 ---
 
-## 十三、深度原理：RAG 的机制与失败模式
+## 13. 深度原理：RAG 的机制与失败模式
 
 ### 11.1 检索的数学本质
 
@@ -763,7 +763,7 @@ RAG 的本质：
 
 ---
 
-## 十四、延伸阅读
+## 14. 延伸阅读
 
 - RAG 综述论文：《Retrieval-Augmented Generation for Large Language Models: A Survey》
 - LangChain RAG 教程：https://python.langchain.com/docs/tutorials/rag/

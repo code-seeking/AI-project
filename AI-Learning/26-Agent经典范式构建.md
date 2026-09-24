@@ -6,7 +6,7 @@
 
 ---
 
-## 一、三种经典 Agent 范式概览
+## 1. 三种经典 Agent 范式概览
 
 ![Agent 三种经典范式对比](agent-paradigm-comparison.png)
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 二、ReAct 范式
+## 2. ReAct 范式
 
 ### 核心概念深度解析
 
@@ -128,7 +128,7 @@ public class ReActAgent {
 
 ---
 
-## 三、Plan-and-Solve 范式
+## 3. Plan-and-Solve 范式
 
 ### 3.1 核心思想
 
@@ -205,7 +205,7 @@ public class PlanAndSolveAgent {
 
 ---
 
-## 四、Reflection 范式
+## 4. Reflection 范式
 
 ### 4.1 核心思想
 
@@ -285,7 +285,7 @@ public class ReflectionAgent {
 
 ---
 
-## 五、三种范式对比
+## 5. 三种范式对比
 
 ### 三种范式执行流程图
 
@@ -319,7 +319,7 @@ graph LR
 
 ---
 
-## 六、HR 项目中的应用场景
+## 6. HR 项目中的应用场景
 
 ```
 ReAct 适用：
@@ -342,7 +342,7 @@ Reflection 适用：
 
 ---
 
-## 七、本课小结
+## 7. 本课小结
 
 ```
 核心要点：
@@ -355,7 +355,7 @@ Reflection 适用：
 
 ---
 
-## 八、思考题
+## 8. 思考题
 
 1. **你的 HR 项目中，AI 筛简历环节用哪种范式最合适？为什么？**
 2. **ReAct 和 Plan-and-Solve 能否结合？设计一个"先规划再 ReAct 执行"的方案。**
@@ -364,7 +364,7 @@ Reflection 适用：
 
 ---
 
-## 九、延伸阅读
+## 9. 延伸阅读
 
 - ReAct 论文：https://arxiv.org/abs/2210.03629
 - Plan-and-Solve 论文：https://arxiv.org/abs/2305.04091

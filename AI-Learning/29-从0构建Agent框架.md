@@ -6,7 +6,7 @@
 
 ---
 
-## 一、为什么要自己造轮子？
+## 1. 为什么要自己造轮子？
 
 ```
 学习目的：
@@ -24,7 +24,7 @@
 
 ---
 
-## 二、框架架构设计
+## 2. 框架架构设计
 
 ### 核心概念深度解析
 
@@ -71,7 +71,7 @@
 
 ---
 
-## 三、核心抽象：LLM 层
+## 3. 核心抽象：LLM 层
 
 ### 3.1 消息类型
 
@@ -117,7 +117,7 @@ public class ChatResponse {
 
 ---
 
-## 四、核心抽象：Tool 层
+## 4. 核心抽象：Tool 层
 
 ### 4.1 工具基类
 
@@ -180,7 +180,7 @@ public class ToolRegistry {
 
 ---
 
-## 五、核心抽象：Agent 层
+## 5. 核心抽象：Agent 层
 
 ### 5.1 Agent 基类
 
@@ -282,7 +282,7 @@ public class ReflectionAgent extends Agent {
 
 ---
 
-## 六、核心抽象：Memory 层
+## 6. 核心抽象：Memory 层
 
 ```java
 // 记忆接口
@@ -330,7 +330,7 @@ public class CompressingMemory implements Memory {
 
 ---
 
-## 七、完整使用示例
+## 7. 完整使用示例
 
 ### Agent 框架组件关系图
 
@@ -387,7 +387,7 @@ System.out.println(result);
 
 ---
 
-## 八、Java 版本设计思路对比
+## 8. Java 版本设计思路对比
 
 | Python HelloAgents | Java 对应设计 |
 |-------------------|---------------|
@@ -408,7 +408,7 @@ System.out.println(result);
 
 ---
 
-## 九、本课小结
+## 9. 本课小结
 
 ```
 核心要点：
@@ -422,7 +422,7 @@ System.out.println(result);
 
 ---
 
-## 十、思考题
+## 10. 思考题
 
 1. **如果不使用框架，你的 HR 项目中 Agent 循环会写成什么样？对比本课设计。**
 2. **Tool 层为什么要用 JsonSchema 描述参数？直接用 Java 类型不行吗？**
@@ -431,7 +431,7 @@ System.out.println(result);
 
 ---
 
-## 十一、延伸阅读
+## 11. 延伸阅读
 
 - Hello-Agents 第七章：https://hello-agents.datawhale.cc/#/chapter7/
 - LangChain4j 文档：https://docs.langchain4j.dev/

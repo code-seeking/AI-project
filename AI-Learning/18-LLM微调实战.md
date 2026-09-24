@@ -6,7 +6,7 @@
 
 ---
 
-## 一、微调 vs RAG vs Prompt（决策框架）
+## 1. 微调 vs RAG vs Prompt（决策框架）
 
 | 问题类型 | 方案 |
 | --- | --- |
@@ -38,7 +38,7 @@
 
 ---
 
-## 二、微调核心概念
+## 2. 微调核心概念
 
 ### 核心概念深度解析
 
@@ -151,7 +151,7 @@ graph TD
 
 ---
 
-## 三、微调数据准备（决定成败的关键）
+## 3. 微调数据准备（决定成败的关键）
 
 ### 3.1 数据格式
 
@@ -208,7 +208,7 @@ graph TD
 
 ---
 
-## 四、微调实战流程（LLaMA-Factory 示例）
+## 4. 微调实战流程（LLaMA-Factory 示例）
 
 ### 4.1 环境准备
 
@@ -298,7 +298,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 五、微调评估（必须做的验证）
+## 5. 微调评估（必须做的验证）
 
 ### 5.1 对比评估
 
@@ -331,7 +331,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 六、用 AI 工具实际体验
+## 6. 用 AI 工具实际体验
 
 ### 6.1 用 ChatGPT 生成微调训练数据
 
@@ -389,7 +389,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 七、微调常见坑
+## 7. 微调常见坑
 
 | 坑 | 问题 | 对策 |
 | --- | --- | --- |
@@ -402,7 +402,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 八、微调在企业的实际应用案例
+## 8. 微调在企业的实际应用案例
 
 **案例：HR 简历分析微调**
 
@@ -418,7 +418,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 九、本课小结
+## 9. 本课小结
 
 > **核心要点**：
 
@@ -432,7 +432,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 十、思考题
+## 10. 思考题
 
 1. **你们项目的简历分析，是"知识问题"还是"行为问题"？微调值得吗？**
 2. **为什么微调学"事实"不好？事实会过时的例子是什么？**
@@ -441,7 +441,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 十一、实战练习
+## 11. 实战练习
 
 1. 从你的历史 AI 分析记录中整理 20 条微调样本（instruction/input/output）
 2. 检查这 20 条的输出格式是否完全一致（不一致先统一）
@@ -450,7 +450,7 @@ ollama create hr-expert -f Modelfile
 
 ---
 
-## 十二、延伸阅读
+## 12. 延伸阅读
 
 - LoRA 论文：《LoRA: Low-Rank Adaptation of Large Language Models》
 - QLoRA 论文：《QLoRA: Efficient Finetuning of Quantized LLMs》

@@ -6,7 +6,7 @@
 
 ---
 
-## 一、什么是 Embedding？
+## 1. 什么是 Embedding？
 
 ### Embedding（嵌入/向量化）
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 二、语义空间（Semantic Space）
+## 2. 语义空间（Semantic Space）
 
 ### 语义空间核心概念
 
@@ -84,7 +84,7 @@ graph LR
 
 ---
 
-## 三、Embedding 模型是怎么工作的？
+## 3. Embedding 模型是怎么工作的？
 
 ### 3.1 训练目标（核心思想）
 
@@ -129,7 +129,7 @@ float[] vector = embeddingModel.embed(text);
 
 ---
 
-## 四、相似度计算：向量距离
+## 4. 相似度计算：向量距离
 
 有了向量，怎么判断"有多相似"？
 
@@ -176,7 +176,7 @@ public double cosineSimilarity(float[] a, float[] b) {
 
 ---
 
-## 五、你项目中的 Embedding 实践
+## 5. 你项目中的 Embedding 实践
 
 ### 5.1 人岗匹配是怎么做的？
 
@@ -220,7 +220,7 @@ public double cosineSimilarity(float[] a, float[] b) {
 
 ---
 
-## 六、用 AI 工具实际体验
+## 6. 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 理解 Embedding 的语义匹配能力
 
@@ -343,7 +343,7 @@ public double cosineSimilarity(float[] a, float[] b) {
 
 ---
 
-## 七、Java 开发者视角：Embedding 实战代码
+## 7. Java 开发者视角：Embedding 实战代码
 
 ```java
 /**
@@ -426,7 +426,7 @@ public class EmbeddingService {
 
 ---
 
-## 八、Embedding vs LLM 生成——两者关系
+## 8. Embedding vs LLM 生成——两者关系
 
 ```
 Embedding 模型（小而快）：
@@ -446,7 +446,7 @@ RAG 的经典组合：
 
 ---
 
-## 九、Embedding 的其他应用
+## 9. Embedding 的其他应用
 
 | 应用 | 原理 |
 |------|------|
@@ -459,7 +459,7 @@ RAG 的经典组合：
 
 ---
 
-## 十、本课小结
+## 10. 本课小结
 
 ```
 核心要点：
@@ -473,7 +473,7 @@ RAG 的经典组合：
 
 ---
 
-## 十一、思考题
+## 11. 思考题
 
 1. **为什么"候选人与求职者"的向量会相近，而"候选人与数据库"会远离？**
 2. **如果简历和职位描述都不含"Java"这个关键词，但语义相关，Embedding 能匹配上吗？为什么？**
@@ -482,7 +482,7 @@ RAG 的经典组合：
 
 ---
 
-## 十二、实战练习
+## 12. 实战练习
 
 在你的项目中完成：
 
@@ -493,7 +493,7 @@ RAG 的经典组合：
 
 ---
 
-## 十三、深度原理：Embedding 是怎么学出来的
+## 13. 深度原理：Embedding 是怎么学出来的
 
 ### 11.1 Word2Vec：Embedding 的鼻祖
 
@@ -655,7 +655,7 @@ InfoNCE 损失：
 
 ---
 
-## 十四、延伸阅读
+## 14. 延伸阅读
 
 - OpenAI Embedding 文档：https://platform.openai.com/docs/guides/embeddings
 - BGE 模型：https://github.com/FlagOpen/FlagEmbedding

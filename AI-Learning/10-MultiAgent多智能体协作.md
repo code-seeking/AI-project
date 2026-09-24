@@ -6,7 +6,7 @@
 
 ---
 
-## 一、为什么需要多个 Agent？
+## 1. 为什么需要多个 Agent？
 
 ### 1.1 单 Agent 的局限
 
@@ -68,7 +68,7 @@ graph TB
 
 ---
 
-## 二、多 Agent 协作模式
+## 2. 多 Agent 协作模式
 
 ### 模式 1：主管-工人模式（Supervisor-Worker）⭐ 最常用
 
@@ -127,7 +127,7 @@ Agent A ←→ Agent B ←→ Agent C
 
 ---
 
-## 三、多 Agent 的消息传递
+## 3. 多 Agent 的消息传递
 
 ```
 消息类型：
@@ -151,7 +151,7 @@ Agent A ←→ Agent B ←→ Agent C
 
 ---
 
-## 四、多 Agent 状态管理
+## 4. 多 Agent 状态管理
 
 ### 4.1 为什么需要状态管理？
 
@@ -207,7 +207,7 @@ Agent 状态：
 
 ---
 
-## 五、用 AI 工具实际体验
+## 5. 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 体验多 Agent 协作
 
@@ -339,7 +339,7 @@ Feedback: 报告质量良好，可以通过
 
 ---
 
-## 六、Java 开发者视角：多 Agent 协作实现
+## 6. Java 开发者视角：多 Agent 协作实现
 
 ```java
 /**
@@ -500,7 +500,7 @@ public class MultiAgentService {
 
 ---
 
-## 七、多 Agent 的冲突与协调
+## 7. 多 Agent 的冲突与协调
 
 ```
 冲突场景 1：资源竞争
@@ -522,7 +522,7 @@ public class MultiAgentService {
 
 ---
 
-## 八、多 Agent 实战架构（结合你的项目）
+## 8. 多 Agent 实战架构（结合你的项目）
 
 ```
 你项目未来的 Agent Mesh（记忆确认）：
@@ -553,7 +553,7 @@ public class MultiAgentService {
 
 ---
 
-## 九、多 Agent 的成本与效率
+## 9. 多 Agent 的成本与效率
 
 ```
 成本构成：
@@ -570,7 +570,7 @@ public class MultiAgentService {
 
 ---
 
-## 十、本课小结
+## 10. 本课小结
 
 ```
 核心要点：
@@ -584,7 +584,7 @@ public class MultiAgentService {
 
 ---
 
-## 十一、思考题
+## 11. 思考题
 
 1. **你的招聘场景中，哪些任务适合拆成多 Agent？画出架构图。**
 2. **"简历分析"和"岗位匹配"两个 Agent 之间如何传递数据？消息格式是什么？**
@@ -593,7 +593,7 @@ public class MultiAgentService {
 
 ---
 
-## 十二、实战练习
+## 12. 实战练习
 
 1. 把你项目的"推荐候选人"流程拆成 3 个 Agent，定义各自的职责
 2. 画出它们之间的消息流（谁发给谁、传什么）
@@ -602,7 +602,7 @@ public class MultiAgentService {
 
 ---
 
-## 十三、深度原理：多 Agent 的机制与工程挑战
+## 13. 深度原理：多 Agent 的机制与工程挑战
 
 ### 11.1 消息传递：多 Agent 通信的本质
 
@@ -766,7 +766,7 @@ public class MultiAgentService {
 
 ---
 
-## 十四、延伸阅读
+## 14. 延伸阅读
 
 - AutoGen（微软）：https://github.com/microsoft/autogen
 - CrewAI：https://github.com/crewAIInc/crewAI

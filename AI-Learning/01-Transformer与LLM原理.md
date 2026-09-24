@@ -5,7 +5,7 @@
 
 ---
 
-## 一、从你最熟悉的说起
+## 1. 从你最熟悉的说起
 
 作为 Java 开发者，你处理文本的方式是：`String.contains()`、正则匹配、分词器……
 这些方法都是**基于规则**的——你告诉程序"匹配什么"，它就找什么。
@@ -16,7 +16,7 @@
 
 ---
 
-## 二、核心概念：从词到数字
+## 2. 核心概念：从词到数字
 
 ### 2.1 一切的起点——"把文字变成数字"
 
@@ -83,7 +83,7 @@ Transformer 的 Self-Attention **同时看所有词**：
 
 ---
 
-## 三、Transformer 的整体架构
+## 3. Transformer 的整体架构
 
 > 📊 **架构图参考**：
 > ![Transformer 整体架构](transformer-architecture.png)
@@ -157,7 +157,7 @@ graph TB
 
 ---
 
-## 四、LLM 是怎么"训练"出来的？
+## 4. LLM 是怎么"训练"出来的？
 
 ### 4.1 预训练（Pre-training）
 
@@ -213,7 +213,7 @@ graph TB
 
 ---
 
-## 五、LLM 推理：自回归生成
+## 5. LLM 推理：自回归生成
 
 ### 自回归生成（Autoregressive Generation）
 
@@ -245,7 +245,7 @@ graph TB
 
 ---
 
-## 六、关键参数直觉理解
+## 6. 关键参数直觉理解
 
 | 参数 | 本质 | 类比 | 你项目中的使用 |
 |------|------|------|--------------|
@@ -256,7 +256,7 @@ graph TB
 
 ---
 
-## 七、与你项目的关联
+## 7. 与你项目的关联
 
 你的 HR 候选人 AI 平台中，这些概念无处不在：
 
@@ -280,7 +280,7 @@ ChatResponse response = chatModel.call(prompt);
 
 ---
 
-## 七点五、用 AI 工具实际体验
+## 7.5 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 感受 Self-Attention
 
@@ -350,7 +350,7 @@ Java 的三大特性是：
 
 ---
 
-## 七点六、Java 开发者视角：用代码模拟 Transformer 核心逻辑
+## 7.6 Java 开发者视角：用代码模拟 Transformer 核心逻辑
 
 ```java
 /**
@@ -424,7 +424,7 @@ public class SimpleSelfAttention {
 
 ---
 
-## 八、本课小结
+## 8. 本课小结
 
 ```
 核心要点：
@@ -437,7 +437,7 @@ public class SimpleSelfAttention {
 
 ---
 
-## 九、思考题
+## 9. 思考题
 
 1. **为什么同样的 Prompt 多次调用，LLM 的回答会不同？**（提示：看 Temperature）
 2. **为什么 LLM 有时候会"一本正经地胡说八道"（幻觉）？**（提示：看训练目标）
@@ -446,7 +446,7 @@ public class SimpleSelfAttention {
 
 ---
 
-## 十、深度原理：Transformer 内部机制详解
+## 10. 深度原理：Transformer 内部机制详解
 
 ### 10.1 注意力机制的数学本质
 
@@ -590,7 +590,7 @@ Top-P（Nucleus）：取累积概率刚超过 P 的最小集合再采样
 
 ---
 
-## 十一、延伸阅读
+## 11. 延伸阅读
 
 - 原论文：[Attention Is All You Need](https://arxiv.org/abs/1706.03762)（Transformer 开山之作）
 - 图解 Transformer：[The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)（强烈推荐，有可视化）

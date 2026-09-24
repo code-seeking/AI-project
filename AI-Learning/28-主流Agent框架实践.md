@@ -6,7 +6,7 @@
 
 ---
 
-## 一、四大框架概览
+## 1. 四大框架概览
 
 ![四大 Agent 框架架构对比](agent-framework-comparison.png)
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 二、AutoGen（微软）
+## 2. AutoGen（微软）
 
 ### 核心概念深度解析
 
@@ -105,7 +105,7 @@ executor.initiate_chat(
 
 ---
 
-## 三、AgentScope（阿里）
+## 3. AgentScope（阿里）
 
 ### 3.1 核心机制
 
@@ -158,7 +158,7 @@ result = pipeline(Msg(content="为 Java 岗位筛选候选人"))
 
 ---
 
-## 四、CAMEL（自主协作）
+## 4. CAMEL（自主协作）
 
 ### 4.1 核心机制
 
@@ -210,7 +210,7 @@ print(solution)
 
 ---
 
-## 五、LangGraph（LangChain 生态）
+## 5. LangGraph（LangChain 生态）
 
 ### 5.1 核心机制
 
@@ -278,7 +278,7 @@ result = app.invoke({"goal": "招聘 Java 开发"})
 
 ---
 
-## 六、框架选型矩阵
+## 6. 框架选型矩阵
 
 ### Agent 框架选型流程图
 
@@ -307,7 +307,7 @@ graph TD
 
 ---
 
-## 七、Java 生态对应
+## 7. Java 生态对应
 
 | Python 框架 | Java 对应设计 |
 |------------|--------------|
@@ -327,7 +327,7 @@ graph TD
 
 ---
 
-## 八、本课小结
+## 8. 本课小结
 
 ```
 核心要点：
@@ -341,7 +341,7 @@ graph TD
 
 ---
 
-## 九、思考题
+## 9. 思考题
 
 1. **你的 HR 项目中，多 Agent 协作场景用哪个框架最合适？为什么？**
 2. **LangGraph 的"图"和你项目中的工作流引擎有什么异同？**
@@ -350,7 +350,7 @@ graph TD
 
 ---
 
-## 十、延伸阅读
+## 10. 延伸阅读
 
 - AutoGen 文档：https://microsoft.github.io/autogen/
 - AgentScope GitHub：https://github.com/modelscope/agentscope

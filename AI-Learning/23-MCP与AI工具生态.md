@@ -6,7 +6,7 @@
 
 ---
 
-## 一、MCP 是什么？
+## 1. MCP 是什么？
 
 **MCP（Model Context Protocol，模型上下文协议）**
 由 Anthropic 于 2024 年提出的**开放标准协议**，用于 LLM 与外部工具/数据源的标准化连接。
@@ -28,7 +28,7 @@
 
 ---
 
-## 二、MCP 架构
+## 2. MCP 架构
 
 ### 核心概念深度解析
 
@@ -81,7 +81,7 @@
 
 ---
 
-## 三、MCP 与 Function Calling 的关系
+## 3. MCP 与 Function Calling 的关系
 
 **Function Calling**：模型与"你的函数"的接口（单应用内部）
 **MCP**：模型与"任意系统"的标准化接口（跨应用通用）
@@ -97,7 +97,7 @@
 
 ---
 
-## 四、MCP Server 开发实战
+## 4. MCP Server 开发实战
 
 ### MCP Server 开发流程图
 
@@ -186,7 +186,7 @@ spring:
 
 ---
 
-## 五、MCP 企业应用场景
+## 5. MCP 企业应用场景
 
 **场景 1：统一数据访问**
 
@@ -209,7 +209,7 @@ spring:
 
 ---
 
-## 七、用 AI 工具实际体验
+## 7. 用 AI 工具实际体验
 
 ### 7.1 用 ChatGPT 生成 MCP Server 代码
 
@@ -261,7 +261,7 @@ spring:
 
 ---
 
-## 八、MCP 生态现状（2026）
+## 8. MCP 生态现状（2026）
 
 **已支持 MCP 的平台**：
 
@@ -282,7 +282,7 @@ spring:
 
 ---
 
-## 九、MCP 的安全考量
+## 9. MCP 的安全考量
 
 1. **权限控制**：MCP Server 暴露的工具 = 攻击面，最小暴露原则
 2. **认证授权**：远程 Server 用 API Key / OAuth，本地 Server 用进程隔离
@@ -292,7 +292,7 @@ spring:
 
 ---
 
-## 十、未来趋势：Agent 与 MCP 的融合
+## 10. 未来趋势：Agent 与 MCP 的融合
 
 **趋势 1**：MCP 成为 AI 应用的"USB-C" → 标准化连接一切系统 → 生态爆发
 
@@ -306,7 +306,7 @@ spring:
 
 ---
 
-## 十一、本课小结
+## 11. 本课小结
 
 > **核心要点**：
 
@@ -320,7 +320,7 @@ spring:
 
 ---
 
-## 十二、思考题
+## 12. 思考题
 
 1. **你们 HR 系统哪些能力适合封装成 MCP Server？画出工具清单。**
 2. **MCP 和 Function Calling 的区别是什么？什么时候用哪个？**
@@ -330,7 +330,7 @@ spring:
 
 ---
 
-## 十三、实战练习
+## 13. 实战练习
 
 1. 查看你 IDE 里已接入的 MCP Server（chrome-devtools 等），理解它们如何工作
 2. 用 Spring AI 写一个"候选人查询" MCP Server（@Tool 注解）
@@ -339,7 +339,7 @@ spring:
 
 ---
 
-## 十四、延伸阅读
+## 14. 延伸阅读
 
 - MCP 官方文档：https://modelcontextprotocol.io/
 - MCP 规范（GitHub）：https://github.com/modelcontextprotocol/modelcontextprotocol

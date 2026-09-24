@@ -6,7 +6,7 @@
 
 ---
 
-## 一、为什么需要 Tokenization？
+## 1. 为什么需要 Tokenization？
 
 Transformer 是数学模型，只接受**数字**作为输入。
 
@@ -20,7 +20,7 @@ Transformer 是数学模型，只接受**数字**作为输入。
 
 ---
 
-## 二、分词方法的演进
+## 2. 分词方法的演进
 
 ### 2.1 词级分词（Word-level）
 
@@ -66,7 +66,7 @@ Transformer 是数学模型，只接受**数字**作为输入。
 
 ---
 
-## 三、主流 Tokenizer 算法
+## 3. 主流 Tokenizer 算法
 
 ### 3.1 BPE（Byte Pair Encoding）—— GPT 系列使用
 
@@ -101,7 +101,7 @@ Transformer 是数学模型，只接受**数字**作为输入。
 
 ---
 
-## 四、Token 数量 = 成本 = 速度
+## 4. Token 数量 = 成本 = 速度
 
 ### 4.1 为什么 Token 数这么重要？
 
@@ -134,7 +134,7 @@ LLM API 计费：输入 $X / 1000 tokens，输出 $Y / 1000 tokens
 
 ---
 
-## 五、Special Tokens（特殊标记）
+## 5. Special Tokens（特殊标记）
 
 ### Special Tokens（特殊标记）
 
@@ -170,7 +170,7 @@ Assistant: "好的，我来分析..."
 
 ---
 
-## 六、用 AI 工具实际体验
+## 6. 用 AI 工具实际体验
 
 ### 体验 1：用 OpenAI Tokenizer 工具可视化分词
 
@@ -265,7 +265,7 @@ Token 数量影响 AI 成本的三个原因：
 
 ---
 
-## 七、Java 开发者视角：用代码统计 Token
+## 7. Java 开发者视角：用代码统计 Token
 
 ```java
 /**
@@ -317,7 +317,7 @@ public class TokenCounter {
 
 ---
 
-## 八、与你项目的关联
+## 8. 与你项目的关联
 
 ### 6.1 为什么你的 Ollama Embedding 需要统一分词？
 
@@ -343,7 +343,7 @@ public class TokenCounter {
 
 ---
 
-## 九、本课小结
+## 9. 本课小结
 
 ```
 核心要点：
@@ -356,7 +356,7 @@ public class TokenCounter {
 
 ---
 
-## 十、思考题
+## 10. 思考题
 
 1. **为什么说"中文比英文更费 token"？这对中文 AI 应用的成本有什么影响？**
 2. **如果要优化简历分析的 token 消耗，你会从哪些方面入手？**（提示：输入侧 vs 输出侧）
@@ -365,7 +365,7 @@ public class TokenCounter {
 
 ---
 
-## 十一、深度原理：BPE 完整算法与 Tokenizer 实战
+## 11. 深度原理：BPE 完整算法与 Tokenizer 实战
 
 ### 9.1 BPE 训练算法的完整步骤
 
@@ -504,7 +504,7 @@ curl http://localhost:11434/api/embed -d '{"model":"bge-m3","input":"候选人�
 
 ---
 
-## 十二、延伸阅读
+## 12. 延伸阅读
 
 - OpenAI Tokenizer 可视化工具：https://platform.openai.com/tokenizer
 - BPE 原论文：《Neural Machine Translation of Rare Words with Subword Units》

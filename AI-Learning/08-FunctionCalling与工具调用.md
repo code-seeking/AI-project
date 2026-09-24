@@ -6,7 +6,7 @@
 
 ---
 
-## 一、从"聊天"到"干活"的关键一步
+## 1. 从"聊天"到"干活"的关键一步
 
 ### 1.1 LLM 的能力边界
 
@@ -66,7 +66,7 @@ graph TB
 
 ---
 
-## 二、Function Calling 的核心流程
+## 2. Function Calling 的核心流程
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -91,7 +91,7 @@ graph TB
 
 ---
 
-## 三、Spring AI 中的 Function Calling 实战
+## 3. Spring AI 中的 Function Calling 实战
 
 ### 3.1 定义工具函数
 
@@ -148,7 +148,7 @@ String answer = chatClient.prompt()
 
 ---
 
-## 四、工具定义的细节（决定成功率）
+## 4. 工具定义的细节（决定成功率）
 
 ### 4.1 描述质量决定一切
 
@@ -188,7 +188,7 @@ String answer = chatClient.prompt()
 
 ---
 
-## 五、多轮工具调用（Tool Loop）
+## 5. 多轮工具调用（Tool Loop）
 
 有时一个函数不够，需要多个工具协作：
 
@@ -218,7 +218,7 @@ String answer = chatClient.prompt()
 
 ---
 
-## 六、Function Calling 常见坑
+## 6. Function Calling 常见坑
 
 ```
 坑 1：工具执行失败
@@ -242,7 +242,7 @@ String answer = chatClient.prompt()
 
 ---
 
-## 六点五、用 AI 工具实际体验
+## 6.5 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 体验 Function Calling
 
@@ -354,7 +354,7 @@ getCandidateByName(name="张三")
 
 ---
 
-## 六点六、Java 开发者视角：完整的 Function Calling 实现
+## 6.6 Java 开发者视角：完整的 Function Calling 实现
 
 ```java
 /**
@@ -478,7 +478,7 @@ public class FunctionCallingService {
 
 ---
 
-## 七、工具调用的安全设计（生产必备）
+## 7. 工具调用的安全设计（生产必备）
 
 ```
 原则 1：最小权限
@@ -500,7 +500,7 @@ public class FunctionCallingService {
 
 ---
 
-## 八、与你项目的关联
+## 8. 与你项目的关联
 
 你项目中的 Function Calling 场景：
 
@@ -516,7 +516,7 @@ public class FunctionCallingService {
 
 ---
 
-## 九、本课小结
+## 9. 本课小结
 
 ```
 核心要点：
@@ -530,7 +530,7 @@ public class FunctionCallingService {
 
 ---
 
-## 十、思考题
+## 10. 思考题
 
 1. **为什么说"模型不执行函数，只决定调用函数"？执行在哪里发生？**
 2. **工具描述写得模糊会有什么后果？举例说明。**
@@ -539,7 +539,7 @@ public class FunctionCallingService {
 
 ---
 
-## 十一、实战练习
+## 11. 实战练习
 
 1. 在你项目中找一个已有的工具类，检查 @Description 是否清晰
 2. 新增一个工具：根据公司名称查询该公司所有候选人的数量
@@ -548,7 +548,7 @@ public class FunctionCallingService {
 
 ---
 
-## 十二、深度原理：Tool Calling 的底层机制
+## 12. 深度原理：Tool Calling 的底层机制
 
 ### 12.1 模型"调用工具"到底发生了什么
 
@@ -698,7 +698,7 @@ MCP（Model Context Protocol，第 23 课详解）：
 
 ---
 
-## 十三、延伸阅读
+## 13. 延伸阅读
 
 - OpenAI Function Calling 文档：https://platform.openai.com/docs/guides/function-calling
 - Spring AI Function Calling：https://docs.spring.io/spring-ai/reference/api/functions.html

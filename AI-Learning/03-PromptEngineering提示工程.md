@@ -6,7 +6,7 @@
 
 ---
 
-## 一、什么是 Prompt？
+## 1. 什么是 Prompt？
 
 **Prompt（提示词）** = 你发送给 LLM 的输入文本。
 
@@ -27,7 +27,7 @@ Prompt 就像给新员工布置任务：
 
 ---
 
-## 二、Prompt 的核心构成
+## 2. Prompt 的核心构成
 
 一个完整 Prompt 通常包含以下要素：
 
@@ -55,7 +55,7 @@ Prompt 就像给新员工布置任务：
 
 ---
 
-## 三、六大核心技巧
+## 3. 六大核心技巧
 
 ### 角色设定（Role Prompting）
 
@@ -199,7 +199,7 @@ graph TB
 
 ---
 
-## 四、System Prompt vs User Prompt
+## 4. System Prompt vs User Prompt
 
 在 Chat API 中，messages 分为不同角色：
 
@@ -231,7 +231,7 @@ graph TB
 
 ---
 
-## 五、常见 Prompt 模式（结合你的项目）
+## 5. 常见 Prompt 模式（结合你的项目）
 
 ### 模式 1：信息提取
 
@@ -301,7 +301,7 @@ String prompt = """
 
 ---
 
-## 六、高级技巧
+## 6. 高级技巧
 
 ### 6.1 Temperature 与 Prompt 的配合
 
@@ -336,7 +336,7 @@ String prompt = """
 
 ---
 
-## 六点五、用 AI 工具实际体验
+## 6.5 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 对比有无角色设定的效果
 
@@ -444,7 +444,7 @@ String prompt = """
 
 ---
 
-## 六点六、Java 开发者视角：Prompt 模板管理最佳实践
+## 6.6 Java 开发者视角：Prompt 模板管理最佳实践
 
 ```java
 /**
@@ -523,7 +523,7 @@ public class PromptTemplateManager {
 
 ---
 
-## 七、与你项目的关联
+## 7. 与你项目的关联
 
 你在 HR 系统中用到的 Prompt 场景：
 
@@ -540,7 +540,7 @@ public class PromptTemplateManager {
 
 ---
 
-## 八、本课小结
+## 8. 本课小结
 
 ```
 核心要点：
@@ -554,7 +554,7 @@ public class PromptTemplateManager {
 
 ---
 
-## 九、思考题
+## 9. 思考题
 
 1. **为什么 Few-shot 比纯文字描述格式更有效？**（提示：模型怎么"学习"的）
 2. **你的简历分析功能如果输出 JSON 偶尔解析失败，你会怎么处理？**
@@ -563,7 +563,7 @@ public class PromptTemplateManager {
 
 ---
 
-## 十、实战练习
+## 10. 实战练习
 
 打开你的 HR 项目，选择其中一个 AI 功能（如简历评分），完成以下练习：
 
@@ -574,7 +574,7 @@ public class PromptTemplateManager {
 
 ---
 
-## 十一、深度原理：Prompt 背后为什么有效
+## 11. 深度原理：Prompt 背后为什么有效
 
 ### 11.1 上下文学习（In-Context Learning）的机制
 
@@ -726,7 +726,7 @@ Prompt 里的每个字都花钱（输入计费）
 
 ---
 
-## 十二、延伸阅读
+## 12. 延伸阅读
 
 - OpenAI Prompt Engineering 指南：https://platform.openai.com/docs/guides/prompt-engineering
 - Prompt Engineering Guide：https://www.promptingguide.ai/zh

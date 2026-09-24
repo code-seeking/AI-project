@@ -6,7 +6,7 @@
 
 ---
 
-## 一、什么是 AI Agent？
+## 1. 什么是 AI Agent？
 
 ### AI Agent（智能体）
 
@@ -67,7 +67,7 @@ graph TB
 
 ---
 
-## 二、Agent 的核心循环：ReAct
+## 2. Agent 的核心循环：ReAct
 
 > 📊 **架构图参考**：
 > ![AI Agent 架构](agent-architecture.png)
@@ -125,7 +125,7 @@ Final Answer: 推荐张三（匹配度92）、李四（88）、王五（85）...
 
 ---
 
-## 三、Agent 的规划能力
+## 3. Agent 的规划能力
 
 ### 3.1 任务分解（Task Decomposition）
 
@@ -172,7 +172,7 @@ Agent 自己完成这个拆解，而不是你写死流程
 
 ---
 
-## 四、Agent 的记忆（Memory）
+## 4. Agent 的记忆（Memory）
 
 ```
 短期记忆（对话内）：
@@ -192,7 +192,7 @@ Agent 自己完成这个拆解，而不是你写死流程
 
 ---
 
-## 五、Agent 的架构类型
+## 5. Agent 的架构类型
 
 ```
 单 Agent：一个 Agent 完成所有事
@@ -208,7 +208,7 @@ Agent + 工作流：固定流程 + Agent 灵活节点（第 11 课详讲）
 
 ---
 
-## 六、构建 Agent 的关键组件
+## 6. 构建 Agent 的关键组件
 
 ### 6.1 角色与系统提示（Agent 的"人格"）
 
@@ -276,7 +276,7 @@ public String runAgent(String goal) {
 
 ---
 
-## 六点五、用 AI 工具实际体验
+## 6.5 用 AI 工具实际体验
 
 ### 体验 1：用 ChatGPT 体验 Agent 的 ReAct 循环
 
@@ -397,7 +397,7 @@ Agent 无限循环，token 烧完
 
 ---
 
-## 六点六、Java 开发者视角：Agent 主循环实现
+## 6.6 Java 开发者视角：Agent 主循环实现
 
 ```java
 /**
@@ -507,7 +507,7 @@ public class AgentService {
 
 ---
 
-## 七、Agent 的应用场景（结合你的项目）
+## 7. Agent 的应用场景（结合你的项目）
 
 | 场景 | Agent 行为 |
 |------|-----------|
@@ -527,7 +527,7 @@ public class AgentService {
 
 ---
 
-## 八、Agent 的评估与调试
+## 8. Agent 的评估与调试
 
 ```
 调试核心：看 Thought 过程
@@ -551,7 +551,7 @@ public class AgentService {
 
 ---
 
-## 九、本课小结
+## 9. 本课小结
 
 ```
 核心要点：
@@ -565,7 +565,7 @@ public class AgentService {
 
 ---
 
-## 十、思考题
+## 10. 思考题
 
 1. **普通 LLM 和 Agent 的本质区别是什么？Agent 多了什么？**
 2. **为什么 Agent 需要"观察"环节？如果没有观察，会怎样？**
@@ -574,7 +574,7 @@ public class AgentService {
 
 ---
 
-## 十一、实战练习
+## 11. 实战练习
 
 1. 画出你项目"AI 推荐候选人"流程的 ReAct 循环图（Thought/Action/Observation）
 2. 找出其中需要人工确认的环节，说明为什么要确认
@@ -583,7 +583,7 @@ public class AgentService {
 
 ---
 
-## 十二、深度原理：Agent 的机制与成本模型
+## 12. 深度原理：Agent 的机制与成本模型
 
 ### 12.1 ReAct 为什么有效（论文视角）
 
@@ -744,7 +744,7 @@ Agent 比单次调用危险得多：
 
 ---
 
-## 十三、延伸阅读
+## 13. 延伸阅读
 
 - ReAct 论文：《ReAct: Synergizing Reasoning and Acting in Language Models》
 - OpenAI Agents 文档：https://openai.github.io/openai-agents-python/
